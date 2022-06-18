@@ -1,0 +1,164 @@
+
+import os
+from flask import session
+from sqlalchemy import Column, String, Integer, create_engine, delete
+from flask_sqlalchemy import SQLAlchemy
+import datetime
+from datetime import datetime
+import dateutil.parser
+import json
+
+
+database_path = os.environ['DATABASE_URL']
+if database_path.startswith("postgres://"):
+  database_path = database_path.replace("postgres://", "postgresql://", 1)
+
+
+db = SQLAlchemy()
+
+'''
+setup_db(app)
+    This will bind a flask application and a SQLAlchemy service
+'''
+
+def setup_db(app, database_path=database_path):
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db.app = app
+    db.init_app(app)
+    db.create_all()
+
+'''
+drop_and_create_all()
+This is designed for initializing the database. 
+It will drop all data from the DB and create fresh entries. 
+'''
+def drop_and_create_all():
+    db.drop_all()
+    db.create_all()
+
+    first_movie = Movie(
+        title='A Broken Rose', 
+        release_date='June 12, 2023')
+    first_movie.insert()
+
+    second_movie = Movie(
+        title='On These Matters', 
+        release_date='July 22, 2023')
+    second_movie.insert()
+
+    third_movie = Movie(
+        title='Third Wrong', 
+        release_date='August 12, 2022'
+        )
+    third_movie.insert()
+
+    first_actor = Actor(
+        name='Amarachi Ezgels', 
+        age=36, 
+        gender='Female'
+        )
+    first_actor.insert()
+
+    second_actor = Actor(
+        name='Bukky Jasa', 
+        age=30, 
+        gender='Female'
+        )
+    second_actor.insert()
+
+    third_actor = Actor(
+        name='Anyi Gwoke', 
+        age=12, 
+        gender='Male'
+        )
+    third_actor.insert()
+
+    first_session = Movie_Session.insert().values(
+        actor_id=1, 
+        movie_id=2, 
+        start_time='June 29 2022 10:00:00', 
+        session_duration_in_sec=18000
+        )
+    db.session.execute(first_session)
+    db.session.commit()
+
+
+
+'''An association table connects the Movie model with the Actor model.
+A movie Session provides the avenue for one or more actors to take part in a move.
+One movie may involve several actors, while one actor may appear in several movies.
+'''
+
+Movie_Session = db.Table('movie_sessions',
+    db.Column('id', db.Integer, primary_key=True),
+    db.Column('actor_id', db.Integer, db.ForeignKey('actors.id'), nullable=False),
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), nullable=False),
+    db.Column('start_time', db.DateTime, default=datetime.now().strftime("%B %d %Y %H:%M:%S"), unique=True, nullable=False),
+    db.Column('session_duration_in_sec', db.Integer, nullable=False)
+    )
+
+
+class Movie(db.Model):
+    __tablename__ = 'movies'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, unique=True, nullable=False)
+    release_date = db.Column(db.DateTime, default=datetime.now().strftime("%B %d %Y %H:%M:%S"), nullable=False)
+    actor = db.relationship('Actor', secondary=Movie_Session, lazy='select', backref=db.backref('movies', lazy=True))
+
+    def __init__(self, title, release_date):
+        self.title = title
+        self.release_date = release_date
+
+    def insert_movie(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update_movie(self):
+        db.session.commit()
+
+    def delete_movie(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def format_movie(self):
+        return{
+            "id": self.id,
+            "title": self.title,
+            "release_date": self.release_date
+        }
+
+
+class Actor(db.Model):
+    __tablename__ = 'actors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    gender = db.Column(db.String, nullable=False)
+
+    def __init__(self, name, age, gender):
+        self.name = name
+        self.age = age
+        self.gender = gender
+
+    def insert_actor(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update_actor(self):
+        db.session.commit()
+
+    def delete_actor(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def format_actor(self):
+        return{
+            "id": self.id,
+            "name": self.name,
+            "age": self.age,
+            "gender": self.gender
+        }
+
