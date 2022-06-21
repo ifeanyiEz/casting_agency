@@ -40,62 +40,58 @@ def drop_and_create_all():
     first_movie = Movie(
         title='A Broken Rose', 
         release_date='June 12, 2023')
-    first_movie.insert()
+    first_movie.insert_movie()
 
     second_movie = Movie(
         title='On These Matters', 
         release_date='July 22, 2023')
-    second_movie.insert()
+    second_movie.insert_movie()
 
     third_movie = Movie(
         title='Third Wrong', 
         release_date='August 12, 2022'
         )
-    third_movie.insert()
+    third_movie.insert_movie()
 
     first_actor = Actor(
         name='Amarachi Ezgels', 
         age=36, 
         gender='Female'
         )
-    first_actor.insert()
+    first_actor.insert_actor()
 
     second_actor = Actor(
         name='Bukky Jasa', 
         age=30, 
         gender='Female'
         )
-    second_actor.insert()
+    second_actor.insert_actor()
 
     third_actor = Actor(
         name='Anyi Gwoke', 
         age=12, 
         gender='Male'
         )
-    third_actor.insert()
+    third_actor.insert_actor()
 
-    first_session = Movie_Session.insert().values(
+    first_cast = Movie_Cast.insert().values(
         actor_id=1, 
-        movie_id=2, 
-        start_time='June 29 2022 10:00:00', 
-        session_duration_in_sec=18000
+        movie_id=2
         )
-    db.session.execute(first_session)
+    db.session.execute(first_cast)
     db.session.commit()
 
 
 
 '''An association table connects the Movie model with the Actor model.
-A movie Session provides the avenue for one or more actors to take part in a move.
+A movie session provides the avenue for one or more actors to take part in a move.
 One movie may involve several actors, while one actor may appear in several movies.
 '''
 
-Movie_Session = db.Table('movie_sessions',
+Movie_Cast = db.Table('movie_casts',
     db.Column('id', db.Integer, primary_key=True),
     db.Column('actor_id', db.Integer, db.ForeignKey('actors.id'), nullable=False),
-    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), nullable=False),
-    db.Column('start_time', db.DateTime, default=datetime.now().strftime("%B %d %Y %H:%M:%S"), unique=True, nullable=False),
-    db.Column('session_duration_in_sec', db.Integer, nullable=False)
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), nullable=False)
     )
 
 
@@ -104,8 +100,8 @@ class Movie(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, unique=True, nullable=False)
-    release_date = db.Column(db.DateTime, default=datetime.now().strftime("%B %d %Y %H:%M:%S"), nullable=False)
-    actor = db.relationship('Actor', secondary=Movie_Session, lazy='select', backref=db.backref('movies', lazy=True))
+    release_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    actor = db.relationship('Actor', secondary=Movie_Cast, lazy='select', backref=db.backref('movies', lazy=True))
 
     def __init__(self, title, release_date):
         self.title = title
@@ -122,11 +118,16 @@ class Movie(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def format_movie(self):
+    def movie_detail(self):
         return{
             "id": self.id,
             "title": self.title,
             "release_date": self.release_date
+        }
+
+    def movie_short(self):
+        return{
+            "movie": 'Title: {}, Release Date: {}'.format(self.title, self.release_date)
         }
 
 
@@ -154,11 +155,15 @@ class Actor(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def format_actor(self):
+    def actor_detail(self):
         return{
             "id": self.id,
             "name": self.name,
             "age": self.age,
             "gender": self.gender
         }
-
+    
+    def actor_short(self):
+        return{
+            "actor": 'Name: {}, Age: {}, Gender: {}'.format(self.name, self.age, self.gender)
+        }
