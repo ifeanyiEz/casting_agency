@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 from turtle import title
 from flask import Flask, request, abort, jsonify
@@ -40,7 +41,7 @@ def list_all_actors(payload):
     all_actors = Actor.query.paginate(page = page, per_page = 10)
     if len(all_actors.items()) == 0:
       abort(404)
-    actors = [actor.format_actor() for actor in all_actors]
+    actors = [actor.actor_detail() for actor in all_actors]
     return jsonify({
       'success': True,
       'actors': actors
@@ -54,7 +55,7 @@ def list_all_actors(payload):
 
 @app.route('/actors/<int:actor_id>', methods=['GET'])
 @requires_auth('get:actors')
-def get_actor_by_id(payload, actor_id):
+def get_specific_actor(payload, actor_id):
   try:
     specific_actor = Actor.query.filter_by(id = actor_id).one_or_none()
     if specific_actor is None:
@@ -62,11 +63,27 @@ def get_actor_by_id(payload, actor_id):
         'success': False,
         'message': 'Actor with id: {} was not found'.format(actor_id)
       }), 404
-    actor = specific_actor.format_actor()
+    actor = specific_actor.actor_detail()
+
+    movies_featured_in = []
+
+    all_movie_casts = db.session.query(Movie_Cast).filter_by(actor_id = actor_id).all()
+    if len(all_movie_casts.items()) == 0:
+      return jsonify({
+          'success': False,
+          'message': 'This actor has not featured in any movie'
+      }), 404
+
+    for movie_cast in all_movie_casts:
+      featured_movie = Movie.query.filter_by(id = movie_cast.movie_id).one_or_none()
+      movies_featured_in.append(featured_movie.movie_short())
+
     return jsonify({
       'success': True,
-      'actor': actor
+      'actor': actor,
+      'featured in': movies_featured_in
     }), 200
+    
   except:
     abort(422)
 
@@ -92,7 +109,8 @@ def create_actor(payload):
     new_actor = Actor(name = name, age = age, gender = gender)
     new_actor.insert_actor()
 
-    actor = new_actor.format_actor()
+    actor = new_actor.actor_detail()
+
     return jsonify({
       'success': True,
       'new_actor': actor
@@ -156,7 +174,7 @@ def modify_actor(payload, actor_id):
 
     return jsonify({
       'success': True,
-      'actor': modified_actor.format_actor()
+      'actor': modified_actor.actor_detail()
     }), 200
     
   except:
@@ -180,7 +198,7 @@ def delete_actor(payload, actor_id):
     if deleted_actor is not None:
         return jsonify({
             'success': False,
-            'message': 'Actor with id: {} was not deleted'.format(actor_id)
+            'message': 'Actor with id: {} was not deleted. Please try again.'.format(actor_id)
         }), 422
     else:
       deleted_actor_id = actor.id
@@ -208,7 +226,7 @@ def list_all_movies():
     all_movies = Movie.query.order_by(Movie.release_date.desc()).paginate(page = page, per_page = 10)
     if len(all_movies.items()) == 0:
       abort(404)
-    formatted_movies = [movie.format_movie() for movie in all_movies]
+    formatted_movies = [movie.movie_detail() for movie in all_movies]
     return jsonify({
       'success': True,
       'movies': formatted_movies
@@ -221,19 +239,35 @@ def list_all_movies():
 
 @app.route('/movies/<int:movie_id>', methods=['GET'])
 @requires_auth('get:movies')
-def get_movie_by_id(payload, movie_id):
+def get_specific_movie(payload, movie_id):
   try:
-    specific_movie = Movie.query.filter_by(id=movie_id).one_or_none()
+    specific_movie = Movie.query.filter_by(id = movie_id).one_or_none()
     if specific_movie is None:
       return jsonify({
           'success': False,
           'message': 'Movie with id: {} was not found'.format(movie_id)
       }), 404
-    movie = specific_movie.format_movie()
+    movie = specific_movie.movie_detail()
+
+    all_featured_actors = []
+
+    all_movie_cast = db.session.query(Movie_Cast).filter_by(movie_id = movie_id).all()
+    if len(all_movie_cast.items()) == 0:
+      return jsonify({
+        'success': False,
+        'message': 'No actors have been cast for this movie'
+      }), 404
+    
+    for movie_cast in all_movie_cast:
+      featured_actor = Actor.query.filter_by(id = movie_cast.actor_id).one_or_none()
+      all_featured_actors.append(featured_actor.actor_short())
+    
     return jsonify({
         'success': True,
-        'actor': movie
+        'movie': movie,
+        'featured_actors': all_featured_actors
     }), 200
+
   except:
     abort(422)
 
@@ -258,7 +292,7 @@ def create_movie(payload):
     new_movie = Movie(title = title, release_date = release_date)
     new_movie.insert_movie()
 
-    movie = new_movie.format_movie()
+    movie = new_movie.movie_detail()
 
     return jsonify({
         'success': True,
@@ -306,7 +340,7 @@ def modify_movie(payload, movie_id):
 
     return jsonify({
         'success': True,
-        'movie': modified_movie.format_movie()
+        'movie': modified_movie.movie_detail()
     }), 200
 
   except:
@@ -330,7 +364,7 @@ def delete_movie(payload, movie_id):
     if deleted_movie is not None:
         return jsonify({
             'success': False,
-            'message': 'Movie with id: {} was not deleted'.format(movie_id)
+            'message': 'Movie with id: {} was not deleted. Please try again.'.format(movie_id)
         }), 422
     else:
       deleted_movie_id = movie.id
@@ -342,6 +376,42 @@ def delete_movie(payload, movie_id):
     abort(422)
 
 
+  #==================FOR CASTING SESSIONS====================#
+
+  #__________________List all Movie Casts_______________#
+
+@app.route('/casts', methods=['GET'])
+def list_movie_casts():
+  cast_info = []
+  all_casts = db.session.query(Movie_Cast).all()
+  if len(all_casts.items()) == 0:
+    return jsonify({
+      'success': False,
+      'message': 'No casting records were found'
+    }), 404
+  else:
+    for each_cast in all_casts:
+      movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
+      actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
+      cast_info.append({
+        'movie_id': each_cast.movie_id,
+        'movie_title': movie.title,
+        'movie_release_date': movie.release_date.strftime("%B %d %Y %H:%M:%S"),
+        'actor_id': each_cast.actor_id,
+        'actor_name': actor.name,
+        'actor_name': actor.age,
+        'actor_name': actor.gender
+      })
+  return jsonify({
+    'success': True,
+    'cast_details': cast_info
+  }), 200
+
+
+
+  #__________________Create Movie Sessions_______________#
+
+@app.route('/sessions', methods=['POST'])
 
 #======================ERROR HANDLING=====================#
 
