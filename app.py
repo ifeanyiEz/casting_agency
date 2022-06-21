@@ -83,7 +83,7 @@ def get_specific_actor(payload, actor_id):
       'actor': actor,
       'featured in': movies_featured_in
     }), 200
-    
+
   except:
     abort(422)
 
@@ -382,36 +382,70 @@ def delete_movie(payload, movie_id):
 
 @app.route('/casts', methods=['GET'])
 def list_movie_casts():
-  cast_info = []
-  all_casts = db.session.query(Movie_Cast).all()
-  if len(all_casts.items()) == 0:
+  try:
+
+    cast_info = []
+
+    all_casts = db.session.query(Movie_Cast).all()
+    if len(all_casts.items()) == 0:
+      return jsonify({
+        'success': False,
+        'message': 'No casting records were found'
+      }), 404
+
+    else:
+      for each_cast in all_casts:
+        movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
+        actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
+        cast_info.append({
+          'movie_id': each_cast.movie_id,
+          'movie_title': movie.title,
+          'movie_release_date': movie.release_date.strftime("%B %d %Y %H:%M:%S"),
+          'actor_id': each_cast.actor_id,
+          'actor_name': actor.name,
+          'actor_name': actor.age,
+          'actor_name': actor.gender
+        })
+
     return jsonify({
-      'success': False,
-      'message': 'No casting records were found'
-    }), 404
-  else:
-    for each_cast in all_casts:
-      movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
-      actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
-      cast_info.append({
-        'movie_id': each_cast.movie_id,
-        'movie_title': movie.title,
-        'movie_release_date': movie.release_date.strftime("%B %d %Y %H:%M:%S"),
-        'actor_id': each_cast.actor_id,
-        'actor_name': actor.name,
-        'actor_name': actor.age,
-        'actor_name': actor.gender
-      })
-  return jsonify({
-    'success': True,
-    'cast_details': cast_info
-  }), 200
+      'success': True,
+      'cast_details': cast_info
+    }), 200
+
+  except:
+    abort(422)
 
 
 
-  #__________________Create Movie Sessions_______________#
+  #__________________Create Movie Casts_______________#
 
 @app.route('/sessions', methods=['POST'])
+@requires_auth('post:movie_casts')
+def create_cast(payload):
+
+  data = request.get_json()
+  actor_id = data.get('actor_id', None)
+  movie_id = data.get('movie_id', None)
+  
+  try:
+    
+    if actor_id is None or movie_id is None:
+      return jsonify({
+        'success': False,
+        'message': 'The server could not understand the request. There are no details provided for this cast.'
+      }), 400
+    
+    new_movie_cast = Movie_Cast.insert().values(actor_id = actor_id, movie_id = movie_id)
+    db.session.execute(new_movie_cast)
+    db.session.commit()
+
+    return jsonify({
+      'success': True,
+      'movie_cast': new_movie_cast
+    }), 200
+
+  except:
+    abort(422)
 
 #======================ERROR HANDLING=====================#
 
