@@ -37,8 +37,6 @@ Do this once on first run.
 #@requires_auth('get:actors')
 def list_all_actors():
 
-  page = request.args.get('page', 1, type=int)
-
   try:
     all_actors = Actor.query.all()
     if len(all_actors) == 0:
@@ -223,8 +221,6 @@ def delete_actor(payload, actor_id):
 @app.route('/movies', methods=['GET'])
 #@requires_auth('get:movies')
 def list_all_movies():
-
-  page = request.args.get('page', 1, type=int)
 
   try:
     all_movies = Movie.query.order_by(Movie.release_date.desc()).all()
