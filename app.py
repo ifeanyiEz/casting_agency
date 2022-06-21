@@ -1,5 +1,7 @@
+
 from crypt import methods
 import os
+import sys
 from turtle import title
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -32,14 +34,14 @@ Do this once on first run.
   #__________________List all Actors_______________#
 
 @app.route('/actors', methods=['GET'])
-@requires_auth('get:actors')
-def list_all_actors(payload):
+#@requires_auth('get:actors')
+def list_all_actors():
 
   page = request.args.get('page', 1, type=int)
 
   try:
-    all_actors = Actor.query.paginate(page = page, per_page = 10)
-    if len(all_actors.items()) == 0:
+    all_actors = Actor.query.all()
+    if len(all_actors) == 0:
       abort(404)
     actors = [actor.actor_detail() for actor in all_actors]
     return jsonify({
@@ -48,14 +50,15 @@ def list_all_actors(payload):
     }), 200
 
   except:
+    print(sys.exc_info())
     abort(422)
 
 
   #__________________Get Specific Actor_______________#
 
 @app.route('/actors/<int:actor_id>', methods=['GET'])
-@requires_auth('get:actors')
-def get_specific_actor(payload, actor_id):
+#@requires_auth('get:actors')
+def get_specific_actor(actor_id):
   try:
     specific_actor = Actor.query.filter_by(id = actor_id).one_or_none()
     if specific_actor is None:
@@ -68,11 +71,11 @@ def get_specific_actor(payload, actor_id):
     movies_featured_in = []
 
     all_movie_casts = db.session.query(Movie_Cast).filter_by(actor_id = actor_id).all()
-    if len(all_movie_casts.items()) == 0:
+    if len(all_movie_casts) == 0:
       return jsonify({
-          'success': False,
+          'success': True,
           'message': 'This actor has not featured in any movie'
-      }), 404
+      }), 200
 
     for movie_cast in all_movie_casts:
       featured_movie = Movie.query.filter_by(id = movie_cast.movie_id).one_or_none()
@@ -85,6 +88,7 @@ def get_specific_actor(payload, actor_id):
     }), 200
 
   except:
+    print(sys.exc_info())
     abort(422)
 
 
@@ -217,14 +221,14 @@ def delete_actor(payload, actor_id):
   #__________________List all Movies_______________#
 
 @app.route('/movies', methods=['GET'])
-@requires_auth('get:movies')
+#@requires_auth('get:movies')
 def list_all_movies():
 
   page = request.args.get('page', 1, type=int)
 
   try:
-    all_movies = Movie.query.order_by(Movie.release_date.desc()).paginate(page = page, per_page = 10)
-    if len(all_movies.items()) == 0:
+    all_movies = Movie.query.order_by(Movie.release_date.desc()).all()
+    if len(all_movies) == 0:
       abort(404)
     formatted_movies = [movie.movie_detail() for movie in all_movies]
     return jsonify({
@@ -232,14 +236,15 @@ def list_all_movies():
       'movies': formatted_movies
     }), 200
   except:
+    print(sys.exc_info())
     abort(422)
 
 
   #__________________Get Specific Movie_______________#
 
 @app.route('/movies/<int:movie_id>', methods=['GET'])
-@requires_auth('get:movies')
-def get_specific_movie(payload, movie_id):
+#@requires_auth('get:movies')
+def get_specific_movie(movie_id):
   try:
     specific_movie = Movie.query.filter_by(id = movie_id).one_or_none()
     if specific_movie is None:
@@ -252,11 +257,11 @@ def get_specific_movie(payload, movie_id):
     all_featured_actors = []
 
     all_movie_cast = db.session.query(Movie_Cast).filter_by(movie_id = movie_id).all()
-    if len(all_movie_cast.items()) == 0:
+    if len(all_movie_cast) == 0:
       return jsonify({
-        'success': False,
+        'success': True,
         'message': 'No actors have been cast for this movie'
-      }), 404
+      }), 200
     
     for movie_cast in all_movie_cast:
       featured_actor = Actor.query.filter_by(id = movie_cast.actor_id).one_or_none()
