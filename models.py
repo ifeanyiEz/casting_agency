@@ -8,7 +8,13 @@ from datetime import datetime
 import dateutil.parser
 from settings import *
 import json
+from json import JSONEncoder
 
+
+
+#=============================REFERENCES=============================#
+
+#https://pynative.com/make-python-class-json-serializable/
 
 # database_path = os.environ['DATABASE_URL']
 # if database_path.startswith("postgres://"):
@@ -96,6 +102,10 @@ Movie_Cast = db.Table('movie_casts',
     db.Column('actor_id', db.Integer, db.ForeignKey('actors.id'), nullable=False),
     db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), nullable=False)
     )
+
+class Movie_CastEncoder(JSONEncoder):
+    def default(self, o):
+        return o.__dict__
 
 
 class Movie(db.Model):
