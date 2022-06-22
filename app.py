@@ -72,7 +72,8 @@ def get_specific_actor(actor_id):
     if len(all_movie_casts) == 0:
       return jsonify({
           'success': True,
-          'message': 'This actor has not featured in any movie'
+          'actor': actor,
+          'featured in': 'This actor has not featured in any movie yet'
       }), 200
 
     for movie_cast in all_movie_casts:
@@ -93,8 +94,8 @@ def get_specific_actor(actor_id):
   #__________________Create New Actors_______________#
 
 @app.route('/actors', methods=['POST'])
-@requires_auth('post:actors')
-def create_actor(payload):
+#@requires_auth('post:actors')
+def create_actor():
 
   data = request.get_json()
   name = data.get('name', None)
@@ -125,8 +126,8 @@ def create_actor(payload):
   #__________________Edit Specific Actor_______________#
 
 @app.route('/actors/<int:actor_id>', methods=['PATCH'])
-@requires_auth('patch:actors')
-def modify_actor(payload, actor_id):
+#@requires_auth('patch:actors')
+def modify_actor(actor_id):
 
   data = request.get_json()
   name = data.get('name', None)
@@ -186,8 +187,8 @@ def modify_actor(payload, actor_id):
   #_________________Delete Specific Actor_______________#
 
 @app.route('/actors/<int:actor_id>', methods=['DELETE'])
-@requires_auth('delete:actors')
-def delete_actor(payload, actor_id):
+#@requires_auth('delete:actors')
+def delete_actor(actor_id):
   try:
     actor = Actor.query.filter_by(id = actor_id).one_or_none()
     if actor is None:
@@ -256,7 +257,8 @@ def get_specific_movie(movie_id):
     if len(all_movie_cast) == 0:
       return jsonify({
         'success': True,
-        'message': 'No actors have been cast for this movie'
+        'movie': movie,
+        'featured_actors': 'No actors have been cast for this movie'
       }), 200
     
     for movie_cast in all_movie_cast:
@@ -276,8 +278,8 @@ def get_specific_movie(movie_id):
   #__________________Create New Movies_______________#
 
 @app.route('/movies', methods=['POST'])
-@requires_auth('post:movies')
-def create_movie(payload):
+#@requires_auth('post:movies')
+def create_movie():
 
   data = request.get_json()
   title = data.get('title', None)
@@ -297,7 +299,7 @@ def create_movie(payload):
 
     return jsonify({
         'success': True,
-        'new_actor': movie
+        'new_movie': movie
     }), 200
 
   except:
@@ -307,8 +309,8 @@ def create_movie(payload):
 #__________________Edit Specific Movie_______________#
 
 @app.route('/movies/<int:movie_id>', methods=['PATCH'])
-@requires_auth('patch:movies')
-def modify_movie(payload, movie_id):
+#@requires_auth('patch:movies')
+def modify_movie(movie_id):
 
   data = request.get_json()
   title = data.get('title', None)
@@ -351,8 +353,8 @@ def modify_movie(payload, movie_id):
 #_________________Delete Specific Movie_______________#
 
 @app.route('/movies/<int:movie_id>', methods=['DELETE'])
-@requires_auth('delete:movies')
-def delete_movie(payload, movie_id):
+#@requires_auth('delete:movies')
+def delete_movie(movie_id):
   try:
     movie = Movie.query.filter_by(id = movie_id).one_or_none()
     if movie is None:
@@ -388,7 +390,7 @@ def list_movie_casts():
     cast_info = []
 
     all_casts = db.session.query(Movie_Cast).all()
-    if len(all_casts.items()) == 0:
+    if len(all_casts) == 0:
       return jsonify({
         'success': False,
         'message': 'No casting records were found'
@@ -404,8 +406,8 @@ def list_movie_casts():
           'movie_release_date': movie.release_date.strftime("%B %d %Y %H:%M:%S"),
           'actor_id': each_cast.actor_id,
           'actor_name': actor.name,
-          'actor_name': actor.age,
-          'actor_name': actor.gender
+          'actor_age': actor.age,
+          'actor_gender': actor.gender
         })
 
     return jsonify({
@@ -414,15 +416,16 @@ def list_movie_casts():
     }), 200
 
   except:
+    print(sys.exc_info())
     abort(422)
 
 
 
   #__________________Create Movie Casts_______________#
 
-@app.route('/sessions', methods=['POST'])
-@requires_auth('post:movie_casts')
-def create_cast(payload):
+@app.route('/casts', methods=['POST'])
+#@requires_auth('post:movie_casts')
+def create_cast():
 
   data = request.get_json()
   actor_id = data.get('actor_id', None)
@@ -440,12 +443,15 @@ def create_cast(payload):
     db.session.execute(new_movie_cast)
     db.session.commit()
 
+    formatted_cast = json.dumps(new_movie_cast, indent = 4, cls=Movie_CastEncoder)
+
     return jsonify({
       'success': True,
-      'movie_cast': new_movie_cast
+      'movie_cast': formatted_cast
     }), 200
 
   except:
+    print(sys.exc_info())
     abort(422)
 
 #======================ERROR HANDLING=====================#
