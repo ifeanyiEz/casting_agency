@@ -103,10 +103,6 @@ Movie_Cast = db.Table('movie_casts',
     db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), nullable=False)
     )
 
-class Movie_CastEncoder(JSONEncoder):
-    def default(self, o):
-        return o.__dict__
-
 
 class Movie(db.Model):
     __tablename__ = 'movies'
