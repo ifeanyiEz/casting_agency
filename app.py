@@ -11,529 +11,544 @@ from auth import *
 
 #=======================INITIALIZE THE APP===================#
 
-#def create_app(test_config=None):
+def create_app(test_config=None):
   # create and configure the app
-app = Flask(__name__)
-setup_db(app)
-CORS(app)
+  app = Flask(__name__)
+  setup_db(app)
+  CORS(app)
 
 
-#=============INITIALIZE THE DATABASE===================#
+  #=============INITIALIZE THE DATABASE===================#
 
-'''
-Uncomment the line below to initialize the database with with data from models.py. 
-Do this once on first run.
-'''
-#drop_and_create_all()
-
-
-#========================DEFINE ENDPOINTS==========================#
-
-  #==================FOR ACTORS====================#
-
-  #__________________List all Actors_______________#
-
-@app.route('/actors', methods=['GET'])
-#@requires_auth('get:actors')
-def list_all_actors():
-
-  try:
-    all_actors = Actor.query.all()
-    if len(all_actors) == 0:
-      abort(404)
-    actors = [actor.actor_detail() for actor in all_actors]
-    return jsonify({
-      'success': True,
-      'actors': actors
-    }), 200
-
-  except:
-    print(sys.exc_info())
-    abort(422)
+  '''
+  Uncomment the line below to initialize the database with with data from models.py. 
+  Do this once on first run.
+  '''
+  #drop_and_create_all()
 
 
-  #__________________Get Specific Actor_______________#
+  #========================DEFINE ENDPOINTS==========================#
 
-@app.route('/actors/<int:actor_id>', methods=['GET'])
-#@requires_auth('get:actors')
-def get_specific_actor(actor_id):
-  try:
-    specific_actor = Actor.query.filter_by(id = actor_id).one_or_none()
-    if specific_actor is None:
+    #==================FOR ACTORS====================#
+
+    #__________________List all Actors_______________#
+
+  @app.route('/actors', methods=['GET'])
+  #@requires_auth('get:actors')
+  def list_all_actors():
+
+    try:
+      all_actors = Actor.query.all()
+      if len(all_actors) == 0:
+        abort(404)
+      actors = [actor.actor_detail() for actor in all_actors]
       return jsonify({
-        'success': False,
-        'message': 'Actor with id: {} was not found'.format(actor_id)
-      }), 404
-    actor = specific_actor.actor_detail()
-
-    movies_featured_in = []
-
-    all_movie_casts = db.session.query(Movie_Cast).filter_by(actor_id = actor_id).all()
-    if len(all_movie_casts) == 0:
-      return jsonify({
-          'success': True,
-          'actor': actor,
-          'featured in': 'This actor has not featured in any movie yet'
+        'success': True,
+        'actors': actors
       }), 200
 
-    for movie_cast in all_movie_casts:
-      featured_movie = Movie.query.filter_by(id = movie_cast.movie_id).one_or_none()
-      movies_featured_in.append(featured_movie.movie_short())
-
-    return jsonify({
-      'success': True,
-      'actor': actor,
-      'featured in': movies_featured_in
-    }), 200
-
-  except:
-    print(sys.exc_info())
-    abort(422)
+    except:
+      print(sys.exc_info())
+      abort(422)
 
 
-  #__________________Create New Actors_______________#
+    #__________________Get Specific Actor_______________#
 
-@app.route('/actors', methods=['POST'])
-#@requires_auth('post:actors')
-def create_actor():
-
-  data = request.get_json()
-  name = data.get('name', None)
-  age = data.get('age', None)
-  gender = data.get('gender', None)
-
-  try:
-    if name is None or age is None or gender is None:
-      return jsonify({
-        'success': False,
-        'message': 'The server could not understand the request. The details provided for new actor are incomplete'
-      }), 400
-
-    new_actor = Actor(name = name, age = age, gender = gender)
-    new_actor.insert_actor()
-
-    actor = new_actor.actor_detail()
-
-    return jsonify({
-      'success': True,
-      'new_actor': actor
-    }), 200
-
-  except:
-    abort(422)
-
-
-  #__________________Edit Specific Actor_______________#
-
-@app.route('/actors/<int:actor_id>', methods=['PATCH'])
-#@requires_auth('patch:actors')
-def modify_actor(actor_id):
-
-  data = request.get_json()
-  name = data.get('name', None)
-  age = data.get('age', None)
-  gender = data.get('gender', None)
-
-  try:
-    actor = Actor.query.filter_by(id = actor_id).one_or_None()
-    if actor is None:
-      return jsonify({
-          'success': False,
-          'message': 'Actor with id: {} was not found'.format(actor_id)
-      }), 404
-    if name is None and age is None and gender is None:
-      return jsonify({
-          'success': False,
-          'message': 'The server could not understand the request. There are no details provided for actor.'
-      }), 400
-    elif name is not None and age is None and gender is None:
-      actor.name = name
-      actor.update_actor()
-    elif name is None and age is not None and gender is None:
-      actor.age = age
-      actor.update_actor()
-    elif name is None and age is None and gender is not None:
-      actor.gender = gender
-      actor.update_actor()
-    elif name is not None and age is not None and gender is None:
-      actor.name = name
-      actor.age = age
-      actor.update_actor()
-    elif name is not None and age is None and gender is not None:
-      actor.name = name
-      actor.gender = gender
-      actor.update_actor()
-    elif name is None and age is not None and gender is not None:
-      actor.age = age
-      actor.gender = gender
-      actor.update_actor()
-    else:
-      actor.name = name
-      actor.age = age
-      actor.gender = gender
-      actor.update_actor()
-    
-    modified_actor = Actor.query.filter_by(id=actor_id).one_or_None()
-
-    return jsonify({
-      'success': True,
-      'actor': modified_actor.actor_detail()
-    }), 200
-    
-  except:
-    abort(422)
-
-
-  #_________________Delete Specific Actor_______________#
-
-@app.route('/actors/<int:actor_id>', methods=['DELETE'])
-#@requires_auth('delete:actors')
-def delete_actor(actor_id):
-  try:
-    actor = Actor.query.filter_by(id = actor_id).one_or_none()
-    if actor is None:
-      return jsonify({
-          'success': False,
-          'message': 'Actor with id: {} was not found'.format(actor_id)
-      }), 404
-    actor.delete_actor()
-    deleted_actor = Actor.query.filter_by(id=actor_id).one_or_none()
-    if deleted_actor is not None:
+  @app.route('/actors/<int:actor_id>', methods=['GET'])
+  #@requires_auth('get:actors')
+  def get_specific_actor(actor_id):
+    try:
+      specific_actor = Actor.query.filter_by(id = actor_id).one_or_none()
+      if specific_actor is None:
         return jsonify({
-            'success': False,
-            'message': 'Actor with id: {} was not deleted. Please try again.'.format(actor_id)
-        }), 422
-    else:
-      deleted_actor_id = actor.id
-      return jsonify({
-        'success': True,
-        'deleted_actor': 'Actor with id: {}'.format(deleted_actor_id)
-      })
-  except:
-    abort(422)
-  
-
-
-  #==================FOR MOVIES====================#
-
-
-  #__________________List all Movies_______________#
-
-@app.route('/movies', methods=['GET'])
-#@requires_auth('get:movies')
-def list_all_movies():
-
-  try:
-    all_movies = Movie.query.order_by(Movie.release_date.desc()).all()
-    if len(all_movies) == 0:
-      abort(404)
-    formatted_movies = [movie.movie_detail() for movie in all_movies]
-    return jsonify({
-      'success': True,
-      'movies': formatted_movies
-    }), 200
-  except:
-    print(sys.exc_info())
-    abort(422)
-
-
-  #__________________Get Specific Movie_______________#
-
-@app.route('/movies/<int:movie_id>', methods=['GET'])
-#@requires_auth('get:movies')
-def get_specific_movie(movie_id):
-  try:
-    specific_movie = Movie.query.filter_by(id = movie_id).one_or_none()
-    if specific_movie is None:
-      return jsonify({
           'success': False,
-          'message': 'Movie with id: {} was not found'.format(movie_id)
-      }), 404
-    movie = specific_movie.movie_detail()
+          'message': 'Actor with id: {} was not found'.format(actor_id)
+        }), 404
+      actor = specific_actor.actor_detail()
 
-    all_featured_actors = []
+      movies_featured_in = []
 
-    all_movie_cast = db.session.query(Movie_Cast).filter_by(movie_id = movie_id).all()
-    if len(all_movie_cast) == 0:
+      all_movie_casts = db.session.query(Movie_Cast).filter_by(actor_id = actor_id).all()
+      if len(all_movie_casts) == 0:
+        return jsonify({
+            'success': True,
+            'actor': actor,
+            'featured in': 'This actor has not featured in any movie yet'
+        }), 200
+
+      for movie_cast in all_movie_casts:
+        featured_movie = Movie.query.filter_by(id = movie_cast.movie_id).one_or_none()
+        movies_featured_in.append(featured_movie.movie_short())
+
       return jsonify({
         'success': True,
-        'movie': movie,
-        'featured_actors': 'No actors have been cast for this movie'
+        'actor': actor,
+        'featured in': movies_featured_in
       }), 200
-    
-    for movie_cast in all_movie_cast:
-      featured_actor = Actor.query.filter_by(id = movie_cast.actor_id).one_or_none()
-      all_featured_actors.append(featured_actor.actor_short())
-    
-    return jsonify({
+
+    except:
+      print(sys.exc_info())
+      abort(422)
+
+
+    #__________________Create New Actors_______________#
+
+  @app.route('/actors', methods=['POST'])
+  #@requires_auth('post:actors')
+  def create_actor():
+
+    data = request.get_json()
+    name = data.get('name', None)
+    age = data.get('age', None)
+    gender = data.get('gender', None)
+
+    try:
+      if name is None or age is None or gender is None:
+        return jsonify({
+          'success': False,
+          'message': 'The server could not understand the request. The details provided for new actor are incomplete'
+        }), 400
+
+      elif len(name) == 0 or len(str(age)) == 0 or len(gender) == 0:
+        return jsonify({
+          'success': False,
+          'message': 'The server could not understand the request. You must provide valid data to add an actor'
+        }), 400
+
+      else:
+        new_actor = Actor(name = name, age = age, gender = gender)
+        new_actor.insert_actor()
+
+      actor = new_actor.actor_detail()
+
+      return jsonify({
         'success': True,
-        'movie': movie,
-        'featured_actors': all_featured_actors
-    }), 200
+        'new_actor': actor
+      }), 200
 
-  except:
-    abort(422)
-
-
-  #__________________Create New Movies_______________#
-
-@app.route('/movies', methods=['POST'])
-#@requires_auth('post:movies')
-def create_movie():
-
-  data = request.get_json()
-  title = data.get('title', None)
-  release_date = data.get('release_date', None)
-
-  try:
-    if title is None or release_date is None:
-      return jsonify({
-          'success': False,
-          'message': 'The server could not understand the request. The details provided for new movie are incomplete'
-      }), 400
-
-    new_movie = Movie(title = title, release_date = release_date)
-    new_movie.insert_movie()
-
-    movie = new_movie.movie_detail()
-
-    return jsonify({
-        'success': True,
-        'new_movie': movie
-    }), 200
-
-  except:
-    abort(422)
+    except:
+      abort(422)
 
 
-#__________________Edit Specific Movie_______________#
+    #__________________Edit Specific Actor_______________#
 
-@app.route('/movies/<int:movie_id>', methods=['PATCH'])
-#@requires_auth('patch:movies')
-def modify_movie(movie_id):
+  @app.route('/actors/<int:actor_id>', methods=['PATCH'])
+  #@requires_auth('patch:actors')
+  def modify_actor(actor_id):
 
-  data = request.get_json()
-  title = data.get('title', None)
-  release_date = data.get('release_date', None)
+    data = request.get_json()
+    name = data.get('name', None)
+    age = data.get('age', None)
+    gender = data.get('gender', None)
 
-  try:
-    movie = Movie.query.filter_by(id = movie_id).one_or_None()
-    if movie is None:
-      return jsonify({
-          'success': False,
-          'message': 'Movie with id: {} was not found'.format(movie_id)
-      }), 404
-    if title is None and release_date is None:
-      return jsonify({
-          'success': False,
-          'message': 'The server could not understand the request. There are no details provided for movie.'
-      }), 400
-    elif title is not None and release_date is None:
-      movie.title = title
-      movie.update_movie()
-    elif title is None and release_date is not None:
-      movie.release_date = release_date
-      movie.update_movie()
-    else:
-      movie.title = title
-      movie.release_date = release_date
-      movie.update_movie()
-
-    modified_movie = Movie.query.filter_by(id=movie_id).one_or_None()
-
-    return jsonify({
-        'success': True,
-        'movie': modified_movie.movie_detail()
-    }), 200
-
-  except:
-    abort(422)
-
-
-#_________________Delete Specific Movie_______________#
-
-@app.route('/movies/<int:movie_id>', methods=['DELETE'])
-#@requires_auth('delete:movies')
-def delete_movie(movie_id):
-  try:
-    movie = Movie.query.filter_by(id = movie_id).one_or_none()
-    if movie is None:
-      return jsonify({
-          'success': False,
-          'message': 'Movie with id: {} was not found'.format(movie_id)
-      }), 404
-    movie.delete_movie()
-    deleted_movie = Movie.query.filter_by(id = movie_id).one_or_none()
-    if deleted_movie is not None:
+    try:
+      actor = Actor.query.filter_by(id = actor_id).first_or_404()
+      if actor is None:
         return jsonify({
             'success': False,
-            'message': 'Movie with id: {} was not deleted. Please try again.'.format(movie_id)
-        }), 422
-    else:
-      deleted_movie_id = movie.id
+            'message': 'Actor with id: {} was not found'.format(actor_id)
+        }), 404
+
+      if len(name) == 0 and len(str(age)) == 0 and len(gender) == 0:
+        return jsonify({
+            'success': False,
+            'message': 'The server could not understand the request. You must provide valid data for actor.'
+        }), 400
+
+      elif len(name) != 0 and len(str(age)) == 0 and len(gender) == 0:
+        actor.name = name
+        actor.update_actor()
+
+      elif len(name) == 0 and len(str(age)) != 0 and len(gender) == 0:
+        actor.age = age
+        actor.update_actor()
+
+      elif len(name) == 0 and len(str(age)) == 0 and len(gender) != 0:
+        actor.gender = gender
+        actor.update_actor()
+
+      elif len(name) != 0 and len(str(age)) != 0 and len(gender) == 0:
+        actor.name = name
+        actor.age = age
+        actor.update_actor()
+
+      elif len(name) != 0 and len(str(age)) == 0 and len(gender) != 0:
+        actor.name = name
+        actor.gender = gender
+        actor.update_actor()
+
+      elif len(name) == 0 and len(str(age)) != 0 and len(gender) != 0:
+        actor.age = age
+        actor.gender = gender
+        actor.update_actor()
+
+      else:
+        actor.name = name
+        actor.age = age
+        actor.gender = gender
+        actor.update_actor()
+      
+      modified_actor = Actor.query.filter_by(id = actor_id).first_or_404()
+
       return jsonify({
+        'success': True,
+        'actor': modified_actor.actor_detail()
+      }), 200
+      
+    except:
+      print(sys.exc_info())
+      abort(422)
+
+
+    #_________________Delete Specific Actor_______________#
+
+  @app.route('/actors/<int:actor_id>', methods=['DELETE'])
+  #@requires_auth('delete:actors')
+  def delete_actor(actor_id):
+    try:
+      actor = Actor.query.filter_by(id = actor_id).one_or_none()
+      if actor is None:
+        return jsonify({
+            'success': False,
+            'message': 'Actor with id: {} was not found'.format(actor_id)
+        }), 404
+      actor.delete_actor()
+      deleted_actor = Actor.query.filter_by(id=actor_id).one_or_none()
+      if deleted_actor is not None:
+          return jsonify({
+              'success': False,
+              'message': 'Actor with id: {} was not deleted. Please try again.'.format(actor_id)
+          }), 422
+      else:
+        deleted_actor_id = actor.id
+        return jsonify({
           'success': True,
-          'deleted_movie': 'Movie with id: {}'.format(deleted_movie_id)
-      })
-  except:
-    abort(422)
-
-
-  #==================FOR CASTING SESSIONS====================#
-
-  #__________________List all Movie Casts_______________#
-
-@app.route('/casts', methods=['GET'])
-def list_movie_casts():
-  try:
-
-    cast_info = []
-
-    all_casts = db.session.query(Movie_Cast).all()
-    if len(all_casts) == 0:
-      return jsonify({
-        'success': False,
-        'message': 'No casting records were found'
-      }), 404
-
-    else:
-      for each_cast in all_casts:
-        movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
-        actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
-        cast_info.append({
-          'movie_id': each_cast.movie_id,
-          'movie_title': movie.title,
-          'movie_release_date': movie.release_date.strftime("%B %d %Y %H:%M:%S"),
-          'actor_id': each_cast.actor_id,
-          'actor_name': actor.name,
-          'actor_age': actor.age,
-          'actor_gender': actor.gender
+          'deleted_actor': 'Actor with id: {}'.format(deleted_actor_id)
         })
-
-    return jsonify({
-      'success': True,
-      'cast_details': cast_info
-    }), 200
-
-  except:
-    print(sys.exc_info())
-    abort(422)
-
-
-
-  #__________________Create Movie Casts_______________#
-
-@app.route('/casts', methods=['POST'])
-#@requires_auth('post:movie_casts')
-def create_cast():
-
-  data = request.get_json()
-  actor_id = data.get('actor_id', None)
-  movie_id = data.get('movie_id', None)
-  
-  try:
+    except:
+      abort(422)
     
-    if actor_id is None or movie_id is None:
+
+
+    #==================FOR MOVIES====================#
+
+
+    #__________________List all Movies_______________#
+
+  @app.route('/movies', methods=['GET'])
+  #@requires_auth('get:movies')
+  def list_all_movies():
+
+    try:
+      all_movies = Movie.query.order_by(Movie.release_date.desc()).all()
+      if len(all_movies) == 0:
+        abort(404)
+      formatted_movies = [movie.movie_detail() for movie in all_movies]
       return jsonify({
-        'success': False,
-        'message': 'The server could not understand the request. There are no details provided for this cast.'
-      }), 400
-    
-    check_cast = db.session.query(Movie_Cast).filter_by(actor_id=actor_id, movie_id=movie_id).first_or_404()
-    if check_cast is not None:
+        'success': True,
+        'movies': formatted_movies
+      }), 200
+    except:
+      print(sys.exc_info())
+      abort(422)
+
+
+    #__________________Get Specific Movie_______________#
+
+  @app.route('/movies/<int:movie_id>', methods=['GET'])
+  #@requires_auth('get:movies')
+  def get_specific_movie(movie_id):
+    try:
+      specific_movie = Movie.query.filter_by(id = movie_id).one_or_none()
+      if specific_movie is None:
+        return jsonify({
+            'success': False,
+            'message': 'Movie with id: {} was not found'.format(movie_id)
+        }), 404
+      movie = specific_movie.movie_detail()
+
+      all_featured_actors = []
+
+      all_movie_cast = db.session.query(Movie_Cast).filter_by(movie_id = movie_id).all()
+      if len(all_movie_cast) == 0:
+        return jsonify({
+          'success': True,
+          'movie': movie,
+          'featured_actors': 'No actors have been cast for this movie'
+        }), 200
+      
+      for movie_cast in all_movie_cast:
+        featured_actor = Actor.query.filter_by(id = movie_cast.actor_id).one_or_none()
+        all_featured_actors.append(featured_actor.actor_short())
+      
       return jsonify({
+          'success': True,
+          'movie': movie,
+          'featured_actors': all_featured_actors
+      }), 200
+
+    except:
+      abort(422)
+
+
+    #__________________Create New Movies_______________#
+
+  @app.route('/movies', methods=['POST'])
+  #@requires_auth('post:movies')
+  def create_movie():
+
+    data = request.get_json()
+    title = data.get('title', None)
+    release_date = data.get('release_date', None)
+
+    try:
+      if title is None or release_date is None:
+        return jsonify({
+            'success': False,
+            'message': 'The server could not understand the request. The details provided for new movie are incomplete'
+        }), 400
+
+      new_movie = Movie(title = title, release_date = release_date)
+      new_movie.insert_movie()
+
+      movie = new_movie.movie_detail()
+
+      return jsonify({
+          'success': True,
+          'new_movie': movie
+      }), 200
+
+    except:
+      abort(422)
+
+
+  #__________________Edit Specific Movie_______________#
+
+  @app.route('/movies/<int:movie_id>', methods=['PATCH'])
+  #@requires_auth('patch:movies')
+  def modify_movie(movie_id):
+
+    data = request.get_json()
+    title = data.get('title', None)
+    release_date = data.get('release_date', None)
+
+    try:
+      movie = Movie.query.filter_by(id = movie_id).first_or_404()
+      if movie is None:
+        return jsonify({
+            'success': False,
+            'message': 'Movie with id: {} was not found'.format(movie_id)
+        }), 404
+      if title is None and release_date is None:
+        return jsonify({
+            'success': False,
+            'message': 'The server could not understand the request. There are no details provided for movie.'
+        }), 400
+      elif title is not None and release_date is None:
+        movie.title = title
+        movie.update_movie()
+      elif title is None and release_date is not None:
+        movie.release_date = release_date
+        movie.update_movie()
+      else:
+        movie.title = title
+        movie.release_date = release_date
+        movie.update_movie()
+
+      modified_movie = Movie.query.filter_by(id = movie_id).first_or_404()
+
+      return jsonify({
+          'success': True,
+          'movie': modified_movie.movie_detail()
+      }), 200
+
+    except:
+      abort(422)
+
+
+  #_________________Delete Specific Movie_______________#
+
+  @app.route('/movies/<int:movie_id>', methods=['DELETE'])
+  #@requires_auth('delete:movies')
+  def delete_movie(movie_id):
+    try:
+      movie = Movie.query.filter_by(id = movie_id).one_or_none()
+      if movie is None:
+        return jsonify({
+            'success': False,
+            'message': 'Movie with id: {} was not found'.format(movie_id)
+        }), 404
+      movie.delete_movie()
+      deleted_movie = Movie.query.filter_by(id = movie_id).one_or_none()
+      if deleted_movie is not None:
+          return jsonify({
+              'success': False,
+              'message': 'Movie with id: {} was not deleted. Please try again.'.format(movie_id)
+          }), 422
+      else:
+        deleted_movie_id = movie.id
+        return jsonify({
+            'success': True,
+            'deleted_movie': 'Movie with id: {}'.format(deleted_movie_id)
+        })
+    except:
+      abort(422)
+
+
+    #==================FOR CASTING SESSIONS====================#
+
+    #__________________List all Movie Casts_______________#
+
+  @app.route('/casts', methods=['GET'])
+  def list_movie_casts():
+    try:
+
+      cast_info = []
+
+      all_casts = db.session.query(Movie_Cast).all()
+      if len(all_casts) == 0:
+        return jsonify({
           'success': False,
-          'message': 'This actor has already been cast for this movie.'
-      }), 400
+          'message': 'No casting records were found'
+        }), 404
 
-    else:
-      movie_cast = Movie_Cast.insert().values(actor_id = actor_id, movie_id = movie_id)
-      db.session.execute(movie_cast)
-      db.session.commit()
+      else:
+        for each_cast in all_casts:
+          movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
+          actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
+          cast_info.append({
+            'movie_id': each_cast.movie_id,
+            'movie_title': movie.title,
+            'movie_release_date': movie.release_date.strftime("%B %d %Y %H:%M:%S"),
+            'actor_id': each_cast.actor_id,
+            'actor_name': actor.name,
+            'actor_age': actor.age,
+            'actor_gender': actor.gender
+          })
 
-    new_cast = db.session.query(Movie_Cast).filter_by(actor_id = actor_id, movie_id = movie_id).first_or_404()
+      return jsonify({
+        'success': True,
+        'cast_details': cast_info
+      }), 200
 
-    new_movie_cast = {}
-    new_movie_cast['id'] = new_cast.id
-    new_movie_cast['actor_id'] = new_cast.actor_id
-    new_movie_cast['movie_id'] = new_cast.movie_id
+    except:
+      abort(422)
 
+
+
+    #__________________Create Movie Casts_______________#
+
+  @app.route('/casts', methods=['POST'])
+  #@requires_auth('post:movie_casts')
+  def create_cast():
+
+    data = request.get_json()
+    actor_id = data.get('actor_id', None)
+    movie_id = data.get('movie_id', None)
+    
+    try:
+      
+      if actor_id is None or movie_id is None:
+        return jsonify({
+          'success': False,
+          'message': 'The server could not understand the request. There are no details provided for this cast.'
+        }), 400
+      
+      check_cast = db.session.query(Movie_Cast).filter_by(actor_id=actor_id, movie_id=movie_id).first_or_404()
+      if check_cast is not None:
+        return jsonify({
+            'success': False,
+            'message': 'This actor has already been cast for this movie.'
+        }), 400
+
+      else:
+        movie_cast = Movie_Cast.insert().values(actor_id = actor_id, movie_id = movie_id)
+        db.session.execute(movie_cast)
+        db.session.commit()
+
+      new_cast = db.session.query(Movie_Cast).filter_by(actor_id = actor_id, movie_id = movie_id).first_or_404()
+
+      new_movie_cast = {}
+      new_movie_cast['id'] = new_cast.id
+      new_movie_cast['actor_id'] = new_cast.actor_id
+      new_movie_cast['movie_id'] = new_cast.movie_id
+
+      return jsonify({
+        'success': True,
+        'new_movie_cast': new_movie_cast
+      }), 200
+
+    except:
+      print(sys.exc_info())
+      abort(422)
+
+  #======================ERROR HANDLING=====================#
+
+  @app.errorhandler(400)
+  def bad_request(error):
     return jsonify({
-      'success': True,
-      'new_movie_cast': new_movie_cast
-    }), 200
+        "success": False,
+        "error": 400,
+        "message": "The server could not understand the request due to invalid syntax."
+    }), 400
 
-  except:
-    print(sys.exc_info())
-    abort(422)
+  @app.errorhandler(401)
+  def unauthorized(error):
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": "Client must authenticate itself to get the requested resource."
+    }), 401
+    
+  @app.errorhandler(403)
+  def forbiden(error):
+    return jsonify({
+        "success": False,
+        "error": 403,
+        "message": "Client does not have access rights to the requested resource"
+    }), 403
 
-#======================ERROR HANDLING=====================#
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "The server can not find the requested resource"
+    }), 404
 
-@app.errorhandler(400)
-def bad_request(error):
-  return jsonify({
-      "success": False,
-      "error": 400,
-      "message": "The server could not understand the request due to invalid syntax."
-  }), 400
+  @app.errorhandler(405)
+  def method_not_allowed(error):
+    return jsonify({
+        "success": False,
+        "error": 405,
+        "message": "This method is not allowed for the requested URL"
+    }), 405
 
-@app.errorhandler(401)
-def unauthorized(error):
-  return jsonify({
-      "success": False,
-      "error": 401,
-      "message": "Client must authenticate itself to get the requested resource."
-  }), 401
+  @app.errorhandler(422)
+  def unprocessable(error):
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "The request was unable to be followed due to semantic errors"
+    }), 422
+
+  @app.errorhandler(500)
+  def internal_error(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": "The server has encountered an internal error"
+    }), 500
+
+  @app.errorhandler(AuthError)
+  def handle_auth_error(exception):
+    response = jsonify(exception.error)
+    response.status_code = exception.status_code
+    return response
   
-@app.errorhandler(403)
-def forbiden(error):
-  return jsonify({
-      "success": False,
-      "error": 403,
-      "message": "Client does not have access rights to the requested resource"
-  }), 403
+  return app
 
-@app.errorhandler(404)
-def not_found(error):
-  return jsonify({
-      "success": False,
-      "error": 404,
-      "message": "The server can not find the requested resource"
-  }), 404
-
-@app.errorhandler(405)
-def method_not_allowed(error):
-  return jsonify({
-      "success": False,
-      "error": 405,
-      "message": "This method is not allowed for the requested URL"
-  }), 405
-
-@app.errorhandler(422)
-def unprocessable(error):
-  return jsonify({
-      "success": False,
-      "error": 422,
-      "message": "The request was unable to be followed due to semantic errors"
-  }), 422
-
-@app.errorhandler(500)
-def internal_error(error):
-  return jsonify({
-      "success": False,
-      "error": 500,
-      "message": "The server has encountered an internal error"
-  }), 500
-
-@app.errorhandler(AuthError)
-def handle_auth_error(exception):
-  response = jsonify(exception.error)
-  response.status_code = exception.status_code
-  return response
-  
-  #return app
-
-#APP = create_app()
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run()
