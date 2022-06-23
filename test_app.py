@@ -18,4 +18,6 @@ class CastingTestCast(unittest.TestCase):
 
 
         with self.app.app_context():
-            
+            self.db = SQLAlchemy
+            self.db.init_app(self.app)
+            self.db.create_all()
