@@ -48,12 +48,14 @@ def drop_and_create_all():
 
     first_movie = Movie(
         title='A Broken Rose', 
-        release_date='June 12, 2023')
+        release_date='June 12, 2023'
+        )
     first_movie.insert_movie()
 
     second_movie = Movie(
         title='On These Matters', 
-        release_date='July 22, 2023')
+        release_date='July 22, 2023'
+        )
     second_movie.insert_movie()
 
     third_movie = Movie(
