@@ -439,15 +439,28 @@ def create_cast():
         'message': 'The server could not understand the request. There are no details provided for this cast.'
       }), 400
     
-    new_movie_cast = Movie_Cast.insert().values(actor_id = actor_id, movie_id = movie_id)
-    db.session.execute(new_movie_cast)
-    db.session.commit()
+    check_cast = db.session.query(Movie_Cast).filter_by(actor_id=actor_id, movie_id=movie_id).first_or_404()
+    if check_cast is not None:
+      return jsonify({
+          'success': False,
+          'message': 'This actor has already been cast for this movie.'
+      }), 400
 
-    formatted_cast = json.dumps(new_movie_cast, indent = 4, cls=Movie_CastEncoder)
+    else:
+      movie_cast = Movie_Cast.insert().values(actor_id = actor_id, movie_id = movie_id)
+      db.session.execute(movie_cast)
+      db.session.commit()
+
+    new_cast = db.session.query(Movie_Cast).filter_by(actor_id = actor_id, movie_id = movie_id).first_or_404()
+
+    new_movie_cast = {}
+    new_movie_cast['id'] = new_cast.id
+    new_movie_cast['actor_id'] = new_cast.actor_id
+    new_movie_cast['movie_id'] = new_cast.movie_id
 
     return jsonify({
       'success': True,
-      'movie_cast': formatted_cast
+      'new_movie_cast': new_movie_cast
     }), 200
 
   except:
