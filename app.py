@@ -149,44 +149,70 @@ def create_app(test_config=None):
             'message': 'Actor with id: {} was not found'.format(actor_id)
         }), 404
 
-      if len(name) == 0 and len(str(age)) == 0 and len(gender) == 0:
+      empty_string_error = jsonify({
+          'success': False,
+          'message': 'The server could not understand the request. Details for actors cannot be empty.'
+        }), 400
+
+      if name is None and age is None and gender is None:
         return jsonify({
             'success': False,
             'message': 'The server could not understand the request. You must provide valid data for actor.'
         }), 400
 
-      elif len(name) != 0 and len(str(age)) == 0 and len(gender) == 0:
-        actor.name = name
-        actor.update_actor()
+      elif name is not None and age is None and gender is None:
+        if len(name) != 0:
+          actor.name = name
+          actor.update_actor()
+        else:
+          return empty_string_error
 
-      elif len(name) == 0 and len(str(age)) != 0 and len(gender) == 0:
-        actor.age = age
-        actor.update_actor()
+      elif name is None and age is not None and gender is None:
+        if len(str(age)) != 0:
+          actor.age = age
+          actor.update_actor()
+        else:
+          return empty_string_error
 
-      elif len(name) == 0 and len(str(age)) == 0 and len(gender) != 0:
-        actor.gender = gender
-        actor.update_actor()
+      elif name is None and age is None and gender is not None:
+        if len(gender) != 0:
+          actor.gender = gender
+          actor.update_actor()
+        else:
+          return empty_string_error
+      
+      elif name is not None and age is not None and gender is None:
+        if len(name) != 0 and len(str(age)) != 0:
+          actor.name = name
+          actor.age = age
+          actor.update_actor()
+        else:
+          return empty_string_error
 
-      elif len(name) != 0 and len(str(age)) != 0 and len(gender) == 0:
-        actor.name = name
-        actor.age = age
-        actor.update_actor()
+      elif name is not None and age is None and gender is not None:
+        if len(name) != 0 and len(gender) != 0:
+          actor.name = name
+          actor.gender = gender
+          actor.update_actor()
+        else:
+          return empty_string_error
 
-      elif len(name) != 0 and len(str(age)) == 0 and len(gender) != 0:
-        actor.name = name
-        actor.gender = gender
-        actor.update_actor()
-
-      elif len(name) == 0 and len(str(age)) != 0 and len(gender) != 0:
-        actor.age = age
-        actor.gender = gender
-        actor.update_actor()
+      elif name is None and age is not None and gender is not None:
+        if len(str(age)) != 0 and len(gender) != 0:
+          actor.age = age
+          actor.gender = gender
+          actor.update_actor()
+        else:
+          return empty_string_error
 
       else:
-        actor.name = name
-        actor.age = age
-        actor.gender = gender
-        actor.update_actor()
+        if len(name) != 0 and len(str(age)) != 0 and len(gender) != 0:
+          actor.name = name
+          actor.age = age
+          actor.gender = gender
+          actor.update_actor()
+        else:
+          return empty_string_error
       
       modified_actor = Actor.query.filter_by(id = actor_id).first_or_404()
 
