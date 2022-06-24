@@ -218,11 +218,10 @@ def create_app(test_config=None):
 
       return jsonify({
         'success': True,
-        'actor': modified_actor.actor_detail()
+        'modified_actor': modified_actor.actor_detail()
       }), 200
       
     except:
-      print(sys.exc_info())
       abort(422)
 
 
@@ -275,7 +274,6 @@ def create_app(test_config=None):
         'movies': formatted_movies
       }), 200
     except:
-      print(sys.exc_info())
       abort(422)
 
 
@@ -365,27 +363,45 @@ def create_app(test_config=None):
             'success': False,
             'message': 'Movie with id: {} was not found'.format(movie_id)
         }), 404
+
+      empty_string_error = jsonify({
+          'success': False,
+          'message': 'The server could not understand the request. Details for movies cannot be empty.'
+        }), 400
+
       if title is None and release_date is None:
         return jsonify({
             'success': False,
             'message': 'The server could not understand the request. There are no details provided for movie.'
         }), 400
+
       elif title is not None and release_date is None:
-        movie.title = title
-        movie.update_movie()
+        if len(title) != 0:
+          movie.title = title
+          movie.update_movie()
+        else:
+          return empty_string_error
+
       elif title is None and release_date is not None:
-        movie.release_date = release_date
-        movie.update_movie()
+        if len(release_date) != 0:
+          movie.release_date = release_date
+          movie.update_movie()
+        else:
+          return empty_string_error
+
       else:
-        movie.title = title
-        movie.release_date = release_date
-        movie.update_movie()
+        if len(title) != 0 and len(release_date) != 0:
+          movie.title = title
+          movie.release_date = release_date
+          movie.update_movie()
+        else:
+          return empty_string_error
 
       modified_movie = Movie.query.filter_by(id = movie_id).first_or_404()
 
       return jsonify({
           'success': True,
-          'movie': modified_movie.movie_detail()
+          'modified_movie': modified_movie.movie_detail()
       }), 200
 
     except:
@@ -397,15 +413,21 @@ def create_app(test_config=None):
   @app.route('/movies/<int:movie_id>', methods=['DELETE'])
   #@requires_auth('delete:movies')
   def delete_movie(movie_id):
+
     try:
+
       movie = Movie.query.filter_by(id = movie_id).one_or_none()
+
       if movie is None:
         return jsonify({
             'success': False,
             'message': 'Movie with id: {} was not found'.format(movie_id)
         }), 404
+
       movie.delete_movie()
+
       deleted_movie = Movie.query.filter_by(id = movie_id).one_or_none()
+
       if deleted_movie is not None:
           return jsonify({
               'success': False,
@@ -417,6 +439,7 @@ def create_app(test_config=None):
             'success': True,
             'deleted_movie': 'Movie with id: {}'.format(deleted_movie_id)
         })
+
     except:
       abort(422)
 
@@ -480,11 +503,20 @@ def create_app(test_config=None):
           'message': 'The server could not understand the request. There are no details provided for this cast.'
         }), 400
       
-      check_cast = db.session.query(Movie_Cast).filter_by(actor_id=actor_id, movie_id=movie_id).first_or_404()
+      check_actor = Actor.query.filter_by(id = actor_id).first()
+      check_movie = Movie.query.filter_by(id = movie_id).first()
+
+      if check_actor is None or check_movie is None:
+        return jsonify({
+          'success': False,
+          'message': 'One or both details does not exist in the database. Please reconfirm then proceed'
+        }), 400
+      
+      check_cast = db.session.query(Movie_Cast).filter_by(actor_id = actor_id, movie_id = movie_id).first()
       if check_cast is not None:
         return jsonify({
             'success': False,
-            'message': 'This actor has already been cast for this movie.'
+            'message': 'This actor has been cast for this movie.'
         }), 400
 
       else:
@@ -492,12 +524,17 @@ def create_app(test_config=None):
         db.session.execute(movie_cast)
         db.session.commit()
 
-      new_cast = db.session.query(Movie_Cast).filter_by(actor_id = actor_id, movie_id = movie_id).first_or_404()
-
-      new_movie_cast = {}
-      new_movie_cast['id'] = new_cast.id
-      new_movie_cast['actor_id'] = new_cast.actor_id
-      new_movie_cast['movie_id'] = new_cast.movie_id
+      new_cast = db.session.query(Movie_Cast).filter_by(actor_id = actor_id, movie_id = movie_id).first()
+      if new_cast is None:
+        return jsonify({
+            'success': False,
+            'message': 'The movie cast was not created, please try again.'
+        }), 400
+      else:
+        new_movie_cast = {}
+        new_movie_cast['id'] = new_cast.id
+        new_movie_cast['actor_id'] = new_cast.actor_id
+        new_movie_cast['movie_id'] = new_cast.movie_id
 
       return jsonify({
         'success': True,
@@ -505,7 +542,6 @@ def create_app(test_config=None):
       }), 200
 
     except:
-      print(sys.exc_info())
       abort(422)
 
   #======================ERROR HANDLING=====================#
