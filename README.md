@@ -95,6 +95,8 @@ DELETE '/api/v1.0/actors/${id}'
     "success": true
 }
 
+
+
 GET '/api/v1.0/movies'
 
 {
@@ -147,6 +149,82 @@ GET '/api/v1.0/movies/${id}'
 }
 
 
-POST ...
-DELETE ...
+POST '/api/v1.0/movies'
+
+{
+    "new_movie": {
+        "id": 6,
+        "release_date": "Fri, 22 Jul 2022 00:00:00 GMT",
+        "title": "The Future Of ..."
+    },
+    "success": true
+}
+
+
+PATCH '/api/v1.0/movies/${id}'
+
+{
+    "modified_movie": {
+        "id": 8,
+        "release_date": "Tue, 06 Jun 2023 00:00:00 GMT",
+        "title": "Avatar 2"
+    },
+    "success": true
+}
+
+DELETE '/api/v1.0/movies/${id}'
+
+{
+    "deleted_movie": "Movie with id: 9",
+    "success": true
+}
+
+
+GET '/api/v1.0/casts'
+
+{
+    "cast_details": [
+        {
+            "actor_age": 36,
+            "actor_gender": "Female",
+            "actor_id": 1,
+            "actor_name": "Amarachi Ezgels",
+            "movie_id": 2,
+            "movie_release_date": "July 22 2023 00:00:00",
+            "movie_title": "On These Matters"
+        },
+        {
+            "actor_age": 36,
+            "actor_gender": "Female",
+            "actor_id": 1,
+            "actor_name": "Amarachi Ezgels",
+            "movie_id": 1,
+            "movie_release_date": "June 12 2023 00:00:00",
+            "movie_title": "A Broken Rose"
+        },
+        {
+            "actor_age": 36,
+            "actor_gender": "Female",
+            "actor_id": 1,
+            "actor_name": "Amarachi Ezgels",
+            "movie_id": 3,
+            "movie_release_date": "August 12 2022 00:00:00",
+            "movie_title": "Third Wrong"
+        },
+        
+        '''
+    ],
+    "success": true
+}
+
+POST '/api/v1.0/casts'
+
+{
+    "new_movie_cast": {
+        "actor_id": 11,
+        "id": 26,
+        "movie_id": 6
+    },
+    "success": true
+}
 
