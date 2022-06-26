@@ -36,6 +36,7 @@ GET '/api/v1.0/actors'
 
         '''
     ],
+    "all_actors": 10
     "success": true
 }
 
@@ -119,6 +120,7 @@ GET '/api/v1.0/movies'
 
         '''
     ],
+    "all_movies": 17
     "success": true
 }
 
@@ -214,6 +216,7 @@ GET '/api/v1.0/casts'
         
         '''
     ],
+    "all_casts": 28
     "success": true
 }
 
