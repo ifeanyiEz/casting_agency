@@ -516,7 +516,7 @@ def create_app(test_config=None):
       if check_cast is not None:
         return jsonify({
             'success': False,
-            'message': 'This actor has been cast for this movie.'
+            'message': 'This actor has already been cast for this movie.'
         }), 400
 
       else:
