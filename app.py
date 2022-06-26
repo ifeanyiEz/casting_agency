@@ -36,15 +36,18 @@ def create_app(test_config=None):
   @app.route('/actors', methods=['GET'])
   #@requires_auth('get:actors')
   def list_all_actors():
+    
+    page = request.args.get('page', 1, type=int)
 
     try:
-      all_actors = Actor.query.all()
-      if len(all_actors) == 0:
+      all_actors = Actor.query.order_by(Actor.id).paginate(page = page, per_page = 5)
+      if len(all_actors.items) == 0:
         abort(404)
-      actors = [actor.actor_detail() for actor in all_actors]
+      actors = [actor.actor_detail() for actor in all_actors.items]
       return jsonify({
         'success': True,
-        'actors': actors
+        'actors': actors,
+        'all_actors': all_actors.total
       }), 200
 
     except:
@@ -264,14 +267,17 @@ def create_app(test_config=None):
   #@requires_auth('get:movies')
   def list_all_movies():
 
+    page = request.args.get('page', 1, type=int)
+
     try:
-      all_movies = Movie.query.order_by(Movie.release_date.desc()).all()
-      if len(all_movies) == 0:
+      all_movies = Movie.query.order_by(Movie.release_date.desc()).paginate(page = page, per_page = 5)
+      if len(all_movies.items) == 0:
         abort(404)
-      formatted_movies = [movie.movie_detail() for movie in all_movies]
+      formatted_movies = [movie.movie_detail() for movie in all_movies.items]
       return jsonify({
         'success': True,
-        'movies': formatted_movies
+        'movies': formatted_movies,
+        'all_movies': all_movies.total
       }), 200
     except:
       abort(422)
@@ -459,17 +465,18 @@ def create_app(test_config=None):
   def list_movie_casts():
     try:
 
+      page = request.args.get('page', 1, type=int)
       cast_info = []
 
-      all_casts = db.session.query(Movie_Cast).all()
-      if len(all_casts) == 0:
+      all_casts = db.session.query(Movie_Cast).paginate(page = page, per_page = 5)
+      if len(all_casts.items) == 0:
         return jsonify({
           'success': False,
           'message': 'No casting records were found'
         }), 404
 
       else:
-        for each_cast in all_casts:
+        for each_cast in all_casts.items:
           movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
           actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
           cast_info.append({
@@ -484,10 +491,12 @@ def create_app(test_config=None):
 
       return jsonify({
         'success': True,
-        'cast_details': cast_info
+        'cast_details': cast_info,
+        'all_casts': all_casts.total
       }), 200
 
     except:
+      print(sys.exc_info())
       abort(422)
 
 
