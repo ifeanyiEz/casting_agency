@@ -332,8 +332,15 @@ def create_app(test_config=None):
             'message': 'The server could not understand the request. The details provided for new movie are incomplete'
         }), 400
 
-      new_movie = Movie(title = title, release_date = release_date)
-      new_movie.insert_movie()
+      elif len(title) == 0 or len(str(release_date)) == 0:
+        return jsonify({
+            'success': False,
+            'message': 'The server could not understand the request. You must provide valid data to add a movie'
+          }), 400
+
+      else:
+        new_movie = Movie(title = title, release_date = release_date)
+        new_movie.insert_movie()
 
       movie = new_movie.movie_detail()
 
