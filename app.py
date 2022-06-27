@@ -270,7 +270,7 @@ def create_app(test_config=None):
     page = request.args.get('page', 1, type=int)
 
     try:
-      all_movies = Movie.query.order_by(Movie.release_date.desc()).paginate(page = page, per_page = 5)
+      all_movies = Movie.query.order_by(Movie.release_date.asc()).paginate(page = page, per_page = 5)
       if len(all_movies.items) == 0:
         abort(404)
       formatted_movies = [movie.movie_detail() for movie in all_movies.items]
