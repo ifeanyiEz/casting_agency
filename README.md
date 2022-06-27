@@ -33,8 +33,6 @@ GET '/api/v1.0/actors'
             "id": 3,
             "name": "Chibzi Gwoke"
         }
-
-        '''
     ],
     "all_actors": 10
     "success": true
@@ -117,8 +115,6 @@ GET '/api/v1.0/movies'
             "release_date": "Fri, 12 Aug 2022 00:00:00 GMT",
             "title": "Third Wrong"
         }
-
-        '''
     ],
     "all_movies": 17
     "success": true
@@ -213,8 +209,6 @@ GET '/api/v1.0/casts'
             "movie_release_date": "August 12 2022 00:00:00",
             "movie_title": "Third Wrong"
         },
-        
-        '''
     ],
     "all_casts": 28
     "success": true
