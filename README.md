@@ -1,14 +1,14 @@
 App Local run
-
+```
 export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run --reload
-
+```
 Test_app local run 
-
+```
 dropdb casting_test && createdb casting_test
 python3 test_app.py
-
+```
 
 Endpoints:
 GET '/api/v1.0/actors'
@@ -168,7 +168,7 @@ POST '/api/v1.0/movies'
 ```
 
 PATCH '/api/v1.0/movies/${id}'
-
+```
 {
     "modified_movie": {
         "id": 8,
@@ -177,17 +177,19 @@ PATCH '/api/v1.0/movies/${id}'
     },
     "success": true
 }
-
+```
 DELETE '/api/v1.0/movies/${id}'
 
+```
 {
     "deleted_movie": "Movie with id: 9",
     "success": true
 }
+```
 
 
 GET '/api/v1.0/casts'
-
+```
 {
     "cast_details": [
         {
@@ -221,9 +223,9 @@ GET '/api/v1.0/casts'
     "all_casts": 28
     "success": true
 }
-
+```
 POST '/api/v1.0/casts'
-
+```
 {
     "new_movie_cast": {
         "actor_id": 11,
@@ -232,3 +234,4 @@ POST '/api/v1.0/casts'
     },
     "success": true
 }
+```
