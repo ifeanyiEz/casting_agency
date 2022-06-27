@@ -6,14 +6,15 @@ export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run --reload
 ```
-Test_app local run 
+#### Test_app local run 
 ```
 dropdb casting_test && createdb casting_test
 python3 test_app.py
 ```
 
-Endpoints:
-GET '/api/v1.0/actors'
+#### Endpoints:
+
+##### GET '/api/v1.0/actors'
 
 ```
 {
@@ -43,7 +44,7 @@ GET '/api/v1.0/actors'
 ```
 
 
-GET '/api/v1.0/actors/${id}'
+##### GET '/api/v1.0/actors/${id}'
 
 ```
 {
@@ -68,7 +69,7 @@ GET '/api/v1.0/actors/${id}'
 }
 ```
 
-POST '/api/v1.0/actors'
+##### POST '/api/v1.0/actors'
 
 ```
 {
@@ -82,7 +83,7 @@ POST '/api/v1.0/actors'
 }
 ```
 
-PATCH '/api/v1.0/actors/${id}'
+##### PATCH '/api/v1.0/actors/${id}'
 
 ```
 {
@@ -96,7 +97,7 @@ PATCH '/api/v1.0/actors/${id}'
 }
 ```
 
-DELETE '/api/v1.0/actors/${id}'
+##### DELETE '/api/v1.0/actors/${id}'
 
 ```
 {
@@ -106,7 +107,8 @@ DELETE '/api/v1.0/actors/${id}'
 ```
 
 
-GET '/api/v1.0/movies'
+##### GET '/api/v1.0/movies'
+
 ```
 {
     "movies": [
@@ -131,7 +133,8 @@ GET '/api/v1.0/movies'
 }
 ```
 
-GET '/api/v1.0/movies/${id}'
+##### GET '/api/v1.0/movies/${id}'
+
 ```
 {
     "movie": {
@@ -157,7 +160,8 @@ GET '/api/v1.0/movies/${id}'
 }
 ```
 
-POST '/api/v1.0/movies'
+##### POST '/api/v1.0/movies'
+
 ```
 {
     "new_movie": {
@@ -169,7 +173,8 @@ POST '/api/v1.0/movies'
 }
 ```
 
-PATCH '/api/v1.0/movies/${id}'
+##### PATCH '/api/v1.0/movies/${id}'
+
 ```
 {
     "modified_movie": {
@@ -180,7 +185,7 @@ PATCH '/api/v1.0/movies/${id}'
     "success": true
 }
 ```
-DELETE '/api/v1.0/movies/${id}'
+##### DELETE '/api/v1.0/movies/${id}'
 
 ```
 {
@@ -190,7 +195,8 @@ DELETE '/api/v1.0/movies/${id}'
 ```
 
 
-GET '/api/v1.0/casts'
+##### GET '/api/v1.0/casts'
+
 ```
 {
     "cast_details": [
@@ -226,7 +232,8 @@ GET '/api/v1.0/casts'
     "success": true
 }
 ```
-POST '/api/v1.0/casts'
+##### POST '/api/v1.0/casts'
+
 ```
 {
     "new_movie_cast": {
