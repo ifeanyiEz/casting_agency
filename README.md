@@ -13,7 +13,8 @@ python3 test_app.py
 Endpoints:
 GET '/api/v1.0/actors'
 
-```{
+```
+{
     "actors": [
         {
             "age": 36,
@@ -36,11 +37,13 @@ GET '/api/v1.0/actors'
     ],
     "all_actors": 10
     "success": true
-}```
+}
+```
 
 
 GET '/api/v1.0/actors/${id}'
 
+```
 {
     "actor": {
         "age": 32,
@@ -61,9 +64,11 @@ GET '/api/v1.0/actors/${id}'
     ],
     "success": true
 }
+```
 
 POST '/api/v1.0/actors'
 
+```
 {
     "new_actor": {
         "age": 45,
@@ -73,10 +78,11 @@ POST '/api/v1.0/actors'
     },
     "success": true
 }
-
+```
 
 PATCH '/api/v1.0/actors/${id}'
 
+```
 {
     "modified_actor": {
         "age": 39,
@@ -86,18 +92,20 @@ PATCH '/api/v1.0/actors/${id}'
     },
     "success": true
 }
+```
 
 DELETE '/api/v1.0/actors/${id}'
 
+```
 {
     "deleted_actor": "Actor with id: 12",
     "success": true
 }
-
+```
 
 
 GET '/api/v1.0/movies'
-
+```
 {
     "movies": [
         {
@@ -119,10 +127,10 @@ GET '/api/v1.0/movies'
     "all_movies": 17
     "success": true
 }
-
+```
 
 GET '/api/v1.0/movies/${id}'
-
+```
 {
     "movie": {
         "id": 1,
@@ -145,10 +153,10 @@ GET '/api/v1.0/movies/${id}'
     ],
     "success": true
 }
-
+```
 
 POST '/api/v1.0/movies'
-
+```
 {
     "new_movie": {
         "id": 6,
@@ -157,7 +165,7 @@ POST '/api/v1.0/movies'
     },
     "success": true
 }
-
+```
 
 PATCH '/api/v1.0/movies/${id}'
 
