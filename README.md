@@ -13,7 +13,7 @@ python3 test_app.py
 Endpoints:
 GET '/api/v1.0/actors'
 
-'''{
+```{
     "actors": [
         {
             "age": 36,
@@ -36,7 +36,7 @@ GET '/api/v1.0/actors'
     ],
     "all_actors": 10
     "success": true
-}'''
+}```
 
 
 GET '/api/v1.0/actors/${id}'
@@ -224,4 +224,3 @@ POST '/api/v1.0/casts'
     },
     "success": true
 }
-
