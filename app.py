@@ -125,7 +125,7 @@ def create_app(test_config=None):
 
       return jsonify({
         'success': True,
-        'new_actor': actor
+        'new actor': actor
       }), 200
 
     except:
@@ -220,7 +220,7 @@ def create_app(test_config=None):
 
       return jsonify({
         'success': True,
-        'modified_actor': modified_actor.actor_detail()
+        'modified actor': modified_actor.actor_detail()
       }), 200
       
     except:
@@ -250,7 +250,7 @@ def create_app(test_config=None):
         deleted_actor_id = actor.id
         return jsonify({
           'success': True,
-          'deleted_actor': 'Actor with id: {}'.format(deleted_actor_id)
+          'deleted actor': 'Actor with id: {}'.format(deleted_actor_id)
         })
     except:
       abort(422)
@@ -303,7 +303,7 @@ def create_app(test_config=None):
         return jsonify({
           'success': True,
           'movie': movie,
-          'featured_actors': 'No actors have been cast for this movie'
+          'featured actors': 'No actors have been cast for this movie'
         }), 200
       
       for movie_cast in all_movie_cast:
@@ -313,7 +313,7 @@ def create_app(test_config=None):
       return jsonify({
           'success': True,
           'movie': movie,
-          'featured_actors': all_featured_actors
+          'featured actors': all_featured_actors
       }), 200
 
     except:
@@ -351,7 +351,7 @@ def create_app(test_config=None):
 
       return jsonify({
           'success': True,
-          'new_movie': movie
+          'new movie': movie
       }), 200
 
     except:
@@ -413,7 +413,7 @@ def create_app(test_config=None):
 
       return jsonify({
           'success': True,
-          'modified_movie': modified_movie.movie_detail()
+          'modified movie': modified_movie.movie_detail()
       }), 200
 
     except:
@@ -449,7 +449,7 @@ def create_app(test_config=None):
         deleted_movie_id = movie.id
         return jsonify({
             'success': True,
-            'deleted_movie': 'Movie with id: {}'.format(deleted_movie_id)
+            'deleted movie': 'Movie with id: {}'.format(deleted_movie_id)
         })
 
     except:
@@ -476,8 +476,9 @@ def create_app(test_config=None):
 
       else:
         for each_cast in all_casts.items:
-          movie = Movie.query.filter_by(id = each_cast.movie_id).first_or_404()
-          actor = Actor.query.filter_by(id = each_cast.actor_id).first_or_404()
+          movie = Movie.query.filter_by(id = each_cast.movie_id).first()
+          actor = Actor.query.filter_by(id = each_cast.actor_id).first()
+
           cast_info.append({
             'movie_id': each_cast.movie_id,
             'movie_title': movie.title,
@@ -491,11 +492,10 @@ def create_app(test_config=None):
       return jsonify({
         'success': True,
         'cast_details': cast_info,
-        'all_casts': all_casts.total
+        'total casts': all_casts.total
       }), 200
 
     except:
-      print(sys.exc_info())
       abort(422)
 
 
@@ -553,7 +553,7 @@ def create_app(test_config=None):
 
       return jsonify({
         'success': True,
-        'new_movie_cast': new_movie_cast
+        'new movie cast': new_movie_cast
       }), 200
 
     except:
