@@ -1,8 +1,12 @@
 # Casting Agency API
+This is the final project for the Full Stack Web Developer Nanodegree Program by Udacity.
+
+## Casting Agency Specifications
+The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. The developer plays the role of an Executive Producer within the company and is therfore tasked with creating a system to simplify and streamline the agency's operational process.
 
 ## Running Locally
-
 In order to successfully run the project on your local server, you'd need to pay attention to the following:
+
 #### Install Python3.9
 This project was created using python3.9. In order to install the latest version of python, follow the instructions at https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python
 #### Create a Virtual Environment
