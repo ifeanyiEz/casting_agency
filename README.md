@@ -18,12 +18,19 @@ To activate the environment so as to begin working from within the environment, 
 ```
 source <env_name>/bin/activate
 ```
-
 #### Install Dependencies
 To install dependencies run
 ```
 pip install -r requirements.txt
 ```
+#### Setup The Database
+With Postgres running, create the database using the following command: 
+```
+createdb casting_agency
+```
+#### Initialize the Database
+In the app.py file uncomment the line that contains the function drop_and_create_all()on first run only. This will initialize the database.
+
 #### App Local Run
 ```
 export FLASK_APP=app.py
