@@ -21,7 +21,7 @@ class CastingTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
 
         self.first_movie = {
-            'title': 'A Broken Rose',
+            'title': 'A Heart Full Of Dreams',
             'release_date': 'June 12, 2023'
             }
 
@@ -40,7 +40,7 @@ class CastingTestCase(unittest.TestCase):
         }
 
         self.first_actor = {
-            'name': 'Harrison Ezgels',
+            'name': 'Emmanuel Black',
             'age': 36,
             'gender': 'Male'
             }
@@ -64,7 +64,7 @@ class CastingTestCase(unittest.TestCase):
 
         self.first_cast = {
             'actor_id': 1,
-            'movie_id': 1
+            'movie_id': 8
         }
 
         with self.app.app_context():
@@ -139,6 +139,33 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['actors'])
         self.assertTrue(data['all_actors'])
+
+
+    #__________________Get Specific Actor: Correct ID_________________#
+
+    def test_get_specific_actor(self):
+        '''Check to see if specific actors can be found, given the actor's ID'''
+        response = self.client().get('/actors/9')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['actor'])
+        self.assertTrue(data['featured in'])
+
+
+    #__________________Get Specific Actor: Incorrect ID_________________#
+
+    def test_get_wrong_actor(self):
+        '''Check to see if specific actors can be found, given the actor's ID'''
+        response = self.client().get('/actors/20')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+        self.assertEqual(data['message'], 'Actor with id: 20 was not found')
+
 
 
 
