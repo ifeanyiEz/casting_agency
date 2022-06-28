@@ -1,12 +1,18 @@
 # Casting Agency API
 
+## Running Locally
+
+In order to successfully run the project on your local server, you'd need to pay attention to the following:
+
+#### Install Dependencies
+
 #### App Local Run
 ```
 export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run --reload
 ```
-#### Test_app Local Run 
+#### Test_App Local Run 
 ```
 dropdb casting_test && createdb casting_test
 psql casting_test < casting_test.psql
