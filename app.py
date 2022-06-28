@@ -90,7 +90,6 @@ def create_app(test_config=None):
       }), 200
 
     except:
-      print(sys.exc_info())
       abort(422)
 
 
