@@ -6,9 +6,10 @@ export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run --reload
 ```
-#### Test_app local run 
+#### Test_app Local Run 
 ```
 dropdb casting_test && createdb casting_test
+psql casting_test < casting_test.psql
 python3 test_app.py
 ```
 
