@@ -4,8 +4,26 @@
 
 In order to successfully run the project on your local server, you'd need to pay attention to the following:
 
-#### Install Dependencies
+#### Install Python3.9
+This project was created using python3.9. In order to install the latest version of python, follow the instructions at https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python
 
+#### Create a Virtual Environment
+For best results and performance, it is strongly recommended all python projects should be run in virtual environments. This allows you to stay organized and isolate each project with it's uniques set of dependencies.
+
+To create your uniquely named virtual environment run
+```
+python3 -m venv <env_name>
+```
+To activate the environment so as to begin working from within the environment, run
+```
+source <env_name>/bin/activate
+```
+
+#### Install Dependencies
+To install dependencies run
+```
+pip install -r requirements.txt
+```
 #### App Local Run
 ```
 export FLASK_APP=app.py
