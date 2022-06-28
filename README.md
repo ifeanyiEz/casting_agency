@@ -74,7 +74,7 @@ python3 test_app.py
 
 ```
 {
-    "new_actor": {
+    "new actor": {
         "age": 45,
         "gender": "Male",
         "id": 11,
@@ -88,7 +88,7 @@ python3 test_app.py
 
 ```
 {
-    "modified_actor": {
+    "modified actor": {
         "age": 39,
         "gender": "Female",
         "id": 12,
@@ -102,7 +102,7 @@ python3 test_app.py
 
 ```
 {
-    "deleted_actor": "Actor with id: 12",
+    "deleted actor": "Actor with id: 12",
     "success": true
 }
 ```
@@ -143,7 +143,7 @@ python3 test_app.py
         "release_date": "Mon, 12 Jun 2023 00:00:00 GMT",
         "title": "A Broken Rose"
     },
-    "featured_actors": [
+    "featured actors": [
         {
             "actor": "Name: Amarachi Ezgels, Age: 36, Gender: Female"
         },
@@ -165,7 +165,7 @@ python3 test_app.py
 
 ```
 {
-    "new_movie": {
+    "new movie": {
         "id": 6,
         "release_date": "Fri, 22 Jul 2022 00:00:00 GMT",
         "title": "The Future Of ..."
@@ -178,7 +178,7 @@ python3 test_app.py
 
 ```
 {
-    "modified_movie": {
+    "modified movie": {
         "id": 8,
         "release_date": "Tue, 06 Jun 2023 00:00:00 GMT",
         "title": "Avatar 2"
@@ -190,7 +190,7 @@ python3 test_app.py
 
 ```
 {
-    "deleted_movie": "Movie with id: 9",
+    "deleted movie": "Movie with id: 9",
     "success": true
 }
 ```
@@ -229,7 +229,7 @@ python3 test_app.py
             "movie_title": "Third Wrong"
         },
     ],
-    "all_casts": 28
+    "total casts": 28
     "success": true
 }
 ```
@@ -237,7 +237,7 @@ python3 test_app.py
 
 ```
 {
-    "new_movie_cast": {
+    "new movie cast": {
         "actor_id": 11,
         "id": 26,
         "movie_id": 6
