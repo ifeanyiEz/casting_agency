@@ -39,6 +39,16 @@ class CastingTestCase(unittest.TestCase):
             'title': 'A Broken Rose',
         }
 
+        self.fifth_movie = {
+            'title': 'Osuofia inside London',
+            'release_date': '2023-01-25 15:20:00'
+        }
+
+        self.sixth_movie = {
+            'title': 'A Heart Full Of Dreams',
+            'release_date': ''
+        }
+
         self.first_actor = {
             'name': 'Emmanuel Black',
             'age': 36,
@@ -62,9 +72,24 @@ class CastingTestCase(unittest.TestCase):
             'gender': 'Male'
         }
 
+        self.fifth_actor = {
+            'name': 'Nicolas Cage'
+        }
+
+        self.sixth_actor = {
+            'name': '',
+            'age': 36,
+            'gender': ''
+        }
+
         self.first_cast = {
             'actor_id': 1,
             'movie_id': 8
+        }
+
+        self.second_cast = {
+            'actor_id': 1,
+            'movie_id': 1
         }
 
         with self.app.app_context():
@@ -78,7 +103,7 @@ class CastingTestCase(unittest.TestCase):
 #================OPERATIONAL TESTS====================================#
 
 
-             #___________ACTORS___________#
+    #======================TESTS FOR ACTORS=========================#
 
 
     #____________Create New Actor: Correct Data___________________#
@@ -90,7 +115,7 @@ class CastingTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['new_actor'])
+        self.assertTrue(data['new actor'])
 
 
     #____________Create New Actor: Incorrect Data___________________#
@@ -116,7 +141,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
 
 
-#____________Create New Actor: Incomplete Data___________________#
+    #____________Create New Actor: Incomplete Data___________________#
 
     def test_create_incomplete_actor(self):
         '''Check if actors are created even with missing data'''
@@ -144,7 +169,7 @@ class CastingTestCase(unittest.TestCase):
     #__________________Get Specific Actor: Correct ID_________________#
 
     def test_get_specific_actor(self):
-        '''Check to see if specific actors can be found, given the actor's ID'''
+        '''Check to see if a specific actor can be found, given the actor's ID'''
         response = self.client().get('/actors/9')
         data = json.loads(response.data)
 
@@ -157,7 +182,7 @@ class CastingTestCase(unittest.TestCase):
     #__________________Get Specific Actor: Incorrect ID_________________#
 
     def test_get_wrong_actor(self):
-        '''Check to see if specific actors can be found, given the actor's ID'''
+        '''Check to see if non-existent actors can be found, given the actor ID'''
         response = self.client().get('/actors/20')
         data = json.loads(response.data)
 
@@ -167,13 +192,62 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Actor with id: 20 was not found')
 
 
+    #__________________Edit Specific Actor: Correct Data_______________#
+
+    def test_edit_specific_actor(self):
+        '''Check to see if actors are patched with new data as expected'''
+        response = self.client().patch('/actors/10', json = self.fifth_actor)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['modified actor'])
 
 
-        #__________MOVIES__________#
+    #__________________Edit Specific Actor: Incorrect Data_______________#
+
+    def test_edit_incorrect_data_actor(self):
+        '''Check to see if actors are not patched with incorrect data as expected'''
+        response = self.client().patch('/actors/11', json=self.sixth_actor)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
 
 
+    #_________________Delete Specific Actor: Valid Actor ID_________________#
 
-#____________Create New Movie: Correct Data___________________#
+    def test_delete_specific_actor(self):
+        '''Check to see if actors are deleted as expected, given valid actor ID'''
+        response = self.client().delete('/actors/8')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['deleted actor'])
+        self.assertEqual(data['deleted actor'], 'Actor with id: 8')
+
+
+    #_________________Delete Specific Actor: Invalid Actor ID_________________#
+
+    def test_delete_invalid_actor(self):
+        '''Check to see if the system responds as expected, given an invalid actor ID'''
+        response = self.client().delete('/actors/20')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+        self.assertEqual(data['message'], 'Actor with id: 20 was not found')
+
+
+        
+
+    #========================TESTS FOR MOVIES=============================#
+
+
+    #____________Create New Movie: Correct Data___________________#
 
     def test_create_correct_movie(self):
         '''Check if movies are created as expected with correct data'''
@@ -182,10 +256,10 @@ class CastingTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['new_movie'])
+        self.assertTrue(data['new movie'])
 
 
-#____________Create New Movie: Incorrect Data___________________#
+    #____________Create New Movie: Incorrect Data___________________#
 
     def test_create_incorrect_movie(self):
         '''Check if movies are created even with missing details'''
@@ -208,7 +282,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
 
 
-#____________Create New Movie: Incomplete Data___________________#
+    #____________Create New Movie: Incomplete Data___________________#
 
     def test_create_incomplete_movie(self):
         '''Check if movies are created even with missing data'''
@@ -233,9 +307,86 @@ class CastingTestCase(unittest.TestCase):
         self.assertTrue(data['all_movies'])
 
 
-        #__________CASTS__________#
+    #__________________Get Specific Movie: Correct ID_________________#
 
-#____________Create New Cast: Correct Data___________________#
+    def test_get_specific_movie(self):
+        '''Check to see if a specific movie can be found, given the movie ID'''
+        response = self.client().get('/movies/9')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['movie'])
+        self.assertTrue(data['featured actors'])
+
+
+    #__________________Get Specific Movie: Incorrect ID_________________#
+
+    def test_get_wrong_movie(self):
+        '''Check to see if a non-existent movie can be found, given the movie ID'''
+        response = self.client().get('/movies/20')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+        self.assertEqual(data['message'], 'Movie with id: 20 was not found')
+
+
+    #__________________Edit Specific Movie: Correct Data_______________#
+
+    def test_edit_specific_movie(self):
+        '''Check to see if movies are patched with new data as expected'''
+        response = self.client().patch('/movies/10', json = self.fifth_movie)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['modified movie'])
+
+
+    #__________________Edit Specific Movie: Incorrect Data_______________#
+
+    def test_edit_incorrect_data_movie(self):
+        '''Check to see if movies are not patched with incorrect data as expected'''
+        response = self.client().patch('/movies/11', json = self.sixth_movie)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+
+
+    #_________________Delete Specific Movie: Valid Movie ID_________________#
+
+    def test_delete_specific_movie(self):
+        '''Check to see if movies are deleted as expected, given valid movie ID'''
+        response = self.client().delete('/movies/8')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['deleted movie'])
+        self.assertEqual(data['deleted movie'], 'Movie with id: 8')
+
+    #_________________Delete Specific Movie: Invalid Movie ID_________________#
+
+    def test_delete_invalid_movie(self):
+        '''Check to see if the system responds as expected, given an invalid movie ID'''
+        response = self.client().delete('/movies/20')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'])
+        self.assertEqual(data['message'], 'Movie with id: 20 was not found')
+
+
+
+
+    #=================TESTS FOR CASTS ENDPOINTS========================#
+
+    #____________Create New Cast: Correct Data___________________#
 
     def test_create_correct_cast(self):
         '''Check if casts are created as expected with correct data'''
@@ -244,8 +395,20 @@ class CastingTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['new_movie_cast'])
+        self.assertTrue(data['new movie cast'])
 
+
+    #____________Create New Cast: Already Existing Cast___________________#
+
+    def test_create_existing_cast(self):
+        '''Check if casts are created uniquely as expected'''
+        response = self.client().post('/casts', json=self.second_cast)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertTrue(data['message'], 'This actor has already been cast for this movie.')
+        
 
     #___________________List ALl Casts___________________#
 
@@ -257,7 +420,7 @@ class CastingTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['cast_details'])
-        self.assertTrue(data['all_casts'])
+        self.assertTrue(data['total casts'])
 
 
 #================MAKE THE TESTS EXECUTABLE====================#
