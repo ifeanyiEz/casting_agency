@@ -3,10 +3,8 @@
 ## Running Locally
 
 In order to successfully run the project on your local server, you'd need to pay attention to the following:
-
 #### Install Python3.9
 This project was created using python3.9. In order to install the latest version of python, follow the instructions at https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python
-
 #### Create a Virtual Environment
 For best results and performance, it is strongly recommended all python projects should be run in virtual environments. This allows you to stay organized and isolate each project with it's uniques set of dependencies.
 
@@ -30,7 +28,6 @@ createdb casting_agency
 ```
 #### Initialize the Database
 In the app.py file uncomment the line that contains the function drop_and_create_all()on first run only. This will initialize the database.
-
 #### App Local Run
 ```
 export FLASK_APP=app.py
@@ -43,7 +40,6 @@ dropdb casting_test && createdb casting_test
 psql casting_test < casting_test.psql
 python3 test_app.py
 ```
-
 #### Endpoints:
 
 ##### GET '/api/v1.0/actors'
