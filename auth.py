@@ -14,7 +14,6 @@ AuthError Exception
 A standardized way to communicate auth failure modes
 '''
 
-
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
@@ -172,10 +171,7 @@ def requires_auth(permission=''):
                 payload = verify_decode_jwt(token)
             except:
                abort(401)
-
             check_permissions(permission, payload)
-
             return f(payload, *args, **kwargs)
-
         return wrapper
     return requires_auth_decorator
