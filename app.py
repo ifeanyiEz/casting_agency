@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import *
 from auth import *
+import settings
 
 #=======================INITIALIZE THE APP===================#
 
@@ -34,8 +35,8 @@ def create_app(test_config=None):
     #__________________List all Actors_______________#
 
   @app.route('/actors', methods=['GET'])
-  #@requires_auth('get:actors')
-  def list_all_actors():
+  @requires_auth('get:actors')
+  def list_all_actors(payload):
     
     page = request.args.get('page', 1, type=int)
 
@@ -58,8 +59,8 @@ def create_app(test_config=None):
     #__________________Get Specific Actor_______________#
 
   @app.route('/actors/<int:actor_id>', methods=['GET'])
-  #@requires_auth('get:actors')
-  def get_specific_actor(actor_id):
+  @requires_auth('get:actors')
+  def get_specific_actor(payload, actor_id):
     try:
       specific_actor = Actor.query.filter_by(id = actor_id).one_or_none()
       if specific_actor is None:
@@ -96,8 +97,8 @@ def create_app(test_config=None):
     #__________________Create New Actors_______________#
 
   @app.route('/actors', methods=['POST'])
-  #@requires_auth('post:actors')
-  def create_actor():
+  @requires_auth('post:actors')
+  def create_actor(payload):
 
     data = request.get_json()
     name = data.get('name', None)
@@ -135,8 +136,8 @@ def create_app(test_config=None):
     #__________________Edit Specific Actor_______________#
 
   @app.route('/actors/<int:actor_id>', methods=['PATCH'])
-  #@requires_auth('patch:actors')
-  def modify_actor(actor_id):
+  @requires_auth('patch:actors')
+  def modify_actor(payload, actor_id):
 
     data = request.get_json()
     name = data.get('name', None)
@@ -230,8 +231,8 @@ def create_app(test_config=None):
     #_________________Delete Specific Actor_______________#
 
   @app.route('/actors/<int:actor_id>', methods=['DELETE'])
-  #@requires_auth('delete:actors')
-  def delete_actor(actor_id):
+  @requires_auth('delete:actors')
+  def delete_actor(payload, actor_id):
     try:
       actor = Actor.query.filter_by(id = actor_id).one_or_none()
       if actor is None:
@@ -263,8 +264,8 @@ def create_app(test_config=None):
     #__________________List all Movies_______________#
 
   @app.route('/movies', methods=['GET'])
-  #@requires_auth('get:movies')
-  def list_all_movies():
+  @requires_auth('get:movies')
+  def list_all_movies(payload):
 
     page = request.args.get('page', 1, type=int)
 
@@ -285,8 +286,8 @@ def create_app(test_config=None):
     #__________________Get Specific Movie_______________#
 
   @app.route('/movies/<int:movie_id>', methods=['GET'])
-  #@requires_auth('get:movies')
-  def get_specific_movie(movie_id):
+  @requires_auth('get:movies')
+  def get_specific_movie(payload, movie_id):
     try:
       specific_movie = Movie.query.filter_by(id = movie_id).one_or_none()
       if specific_movie is None:
@@ -323,8 +324,8 @@ def create_app(test_config=None):
     #__________________Create New Movies_______________#
 
   @app.route('/movies', methods=['POST'])
-  #@requires_auth('post:movies')
-  def create_movie():
+  @requires_auth('post:movies')
+  def create_movie(payload):
 
     data = request.get_json()
     title = data.get('title', None)
@@ -361,8 +362,8 @@ def create_app(test_config=None):
   #__________________Edit Specific Movie_______________#
 
   @app.route('/movies/<int:movie_id>', methods=['PATCH'])
-  #@requires_auth('patch:movies')
-  def modify_movie(movie_id):
+  @requires_auth('patch:movies')
+  def modify_movie(payload, movie_id):
 
     data = request.get_json()
     title = data.get('title', None)
@@ -423,8 +424,8 @@ def create_app(test_config=None):
   #_________________Delete Specific Movie_______________#
 
   @app.route('/movies/<int:movie_id>', methods=['DELETE'])
-  #@requires_auth('delete:movies')
-  def delete_movie(movie_id):
+  @requires_auth('delete:movies')
+  def delete_movie(payload, movie_id):
 
     try:
 
@@ -461,7 +462,9 @@ def create_app(test_config=None):
     #__________________List all Movie Casts_______________#
 
   @app.route('/casts', methods=['GET'])
-  def list_movie_casts():
+  @requires_auth('get:movie_casts')
+  def list_movie_casts(payload):
+
     try:
 
       page = request.args.get('page', 1, type=int)
@@ -503,8 +506,8 @@ def create_app(test_config=None):
     #__________________Create Movie Casts_______________#
 
   @app.route('/casts', methods=['POST'])
-  #@requires_auth('post:movie_casts')
-  def create_cast():
+  @requires_auth('post:movie_casts')
+  def create_cast(payload):
 
     data = request.get_json()
     actor_id = data.get('actor_id', None)
