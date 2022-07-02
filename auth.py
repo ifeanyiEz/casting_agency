@@ -1,14 +1,12 @@
 from distutils.log import error
 import json
+import os
 from flask import request, _request_ctx_stack, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+from settings import *
 
-
-AUTH0_DOMAIN = 'ezufsndcap.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'http://127.0.0.1:5000'
 
 ## AuthError Exception
 '''
@@ -172,8 +170,8 @@ def requires_auth(permission=''):
             token = get_token_auth_header()
             try:
                 payload = verify_decode_jwt(token)
-            except error:
-                abort(401)
+            except:
+               abort(401)
 
             check_permissions(permission, payload)
 
