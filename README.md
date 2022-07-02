@@ -5,9 +5,9 @@ This is the final project for the Full Stack Web Developer Nanodegree Program by
 The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. The developer plays the role of an Executive Producer within the company and is therefore tasked with creating a system to simplify and streamline the agency's operational processes.
 
 ## Motivation for the Project
-This capstone project is designed to provide an opportunity for students, who successfully gone through the program, to use all of the concepts and skills taught in the courses to build an API from start to finish and host it.
+This capstone project is designed to provide an opportunity for students, who have successfully gone through the program, to use all of the concepts and skills taught in the courses to build an API from start to finish and host it.
 
-## Running Locally
+## Running the Project Locally
 In order to successfully run the project on your local server, you'd need to pay attention to the following:
 
 #### Install Python3.9
