@@ -2,6 +2,7 @@ import os
 import unittest
 import json
 from urllib import response
+from jose import jwt
 from flask_sqlalchemy import SQLAlchemy
 from settings import *
 from models import *
@@ -18,6 +19,11 @@ class CastingTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.database_name = TEST_DB_NAME
         self.database_path = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, "localhost:5432", self.database_name)
+
+        self.casting_assistant = CASTING_ASSISTANT_TOKEN
+        self.casting_director = CASTING_DIRECTOR_TOKEN
+        self.executive_producer = EXECUTIVE_PRODUCER_TOKEN
+
         setup_db(self.app, self.database_path)
 
         self.first_movie = {
@@ -110,7 +116,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_correct_actor(self):
         '''Check if actors are created as expected with correct data'''
-        response = self.client().post('/actors', json=self.first_actor)
+        response = self.client().post(
+            '/actors', 
+            json=self.first_actor, 
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -122,7 +132,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_incorrect_actor(self):
         '''Check if actors are created even with missing details'''
-        response = self.client().post('/actors', json=self.second_actor)
+        response = self.client().post(
+            '/actors', 
+            json=self.second_actor,
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -134,7 +148,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_non_unique_actor(self):
         '''Check if actors are created only with unique names'''
-        response = self.client().post('/actors', json = self.third_actor)
+        response = self.client().post(
+            '/actors', 
+            json = self.third_actor,
+            headers={'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 422)
@@ -145,7 +163,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_incomplete_actor(self):
         '''Check if actors are created even with missing data'''
-        response = self.client().post('/actors', json=self.fourth_actor)
+        response = self.client().post(
+            '/actors', 
+            json=self.fourth_actor,
+            headers={'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -157,7 +179,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_list_actors(self):
         '''Check to see if all actors are listed as expected'''
-        response = self.client().get('/actors')
+        response = self.client().get(
+            '/actors',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_assistant)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -170,7 +195,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_get_specific_actor(self):
         '''Check to see if a specific actor can be found, given the actor's ID'''
-        response = self.client().get('/actors/9')
+        response = self.client().get(
+            '/actors/9',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_assistant)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -183,7 +211,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_get_wrong_actor(self):
         '''Check to see if non-existent actors can be found, given the actor ID'''
-        response = self.client().get('/actors/20')
+        response = self.client().get(
+            '/actors/20',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_assistant)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 404)
@@ -196,7 +227,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_edit_specific_actor(self):
         '''Check to see if actors are patched with new data as expected'''
-        response = self.client().patch('/actors/10', json = self.fifth_actor)
+        response = self.client().patch(
+            '/actors/10', 
+            json = self.fifth_actor,
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -208,7 +243,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_edit_incorrect_data_actor(self):
         '''Check to see if actors are not patched with incorrect data as expected'''
-        response = self.client().patch('/actors/11', json=self.sixth_actor)
+        response = self.client().patch(
+            '/actors/11', 
+            json=self.sixth_actor,
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -220,7 +259,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_delete_specific_actor(self):
         '''Check to see if actors are deleted as expected, given valid actor ID'''
-        response = self.client().delete('/actors/8')
+        response = self.client().delete(
+            '/actors/8',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -233,7 +275,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_delete_invalid_actor(self):
         '''Check to see if the system responds as expected, given an invalid actor ID'''
-        response = self.client().delete('/actors/20')
+        response = self.client().delete(
+            '/actors/20',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_director)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 404)
@@ -251,7 +296,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_correct_movie(self):
         '''Check if movies are created as expected with correct data'''
-        response = self.client().post('/movies', json=self.first_movie)
+        response = self.client().post(
+            '/movies', 
+            json=self.first_movie,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -263,7 +312,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_incorrect_movie(self):
         '''Check if movies are created even with missing details'''
-        response = self.client().post('/movies', json=self.second_movie)
+        response = self.client().post(
+            '/movies', 
+            json=self.second_movie,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -275,7 +328,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_non_unique_movie(self):
         '''Check if movies are created only with unique titles'''
-        response = self.client().post('/movies', json=self.third_movie)
+        response = self.client().post(
+            '/movies', 
+            json=self.third_movie,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 422)
@@ -286,7 +343,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_incomplete_movie(self):
         '''Check if movies are created even with missing data'''
-        response = self.client().post('/movies', json=self.fourth_movie)
+        response = self.client().post(
+            '/movies', 
+            json=self.fourth_movie,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -298,7 +359,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_list_movies(self):
         '''Check to see if all movies are listed as expected'''
-        response = self.client().get('/movies')
+        response = self.client().get(
+            '/movies',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_assistant)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -311,7 +375,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_get_specific_movie(self):
         '''Check to see if a specific movie can be found, given the movie ID'''
-        response = self.client().get('/movies/9')
+        response = self.client().get(
+            '/movies/9',
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -324,7 +391,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_get_wrong_movie(self):
         '''Check to see if a non-existent movie can be found, given the movie ID'''
-        response = self.client().get('/movies/20')
+        response = self.client().get(
+            '/movies/20',
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 404)
@@ -337,7 +407,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_edit_specific_movie(self):
         '''Check to see if movies are patched with new data as expected'''
-        response = self.client().patch('/movies/10', json = self.fifth_movie)
+        response = self.client().patch(
+            '/movies/10', 
+            json = self.fifth_movie,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -349,7 +423,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_edit_incorrect_data_movie(self):
         '''Check to see if movies are not patched with incorrect data as expected'''
-        response = self.client().patch('/movies/11', json = self.sixth_movie)
+        response = self.client().patch(
+            '/movies/11', 
+            json = self.sixth_movie,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -361,7 +439,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_delete_specific_movie(self):
         '''Check to see if movies are deleted as expected, given valid movie ID'''
-        response = self.client().delete('/movies/8')
+        response = self.client().delete(
+            '/movies/8',
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -373,7 +454,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_delete_invalid_movie(self):
         '''Check to see if the system responds as expected, given an invalid movie ID'''
-        response = self.client().delete('/movies/20')
+        response = self.client().delete(
+            '/movies/20',
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 404)
@@ -390,7 +474,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_correct_cast(self):
         '''Check if casts are created as expected with correct data'''
-        response = self.client().post('/casts', json=self.first_cast)
+        response = self.client().post(
+            '/casts', 
+            json=self.first_cast,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -402,7 +490,11 @@ class CastingTestCase(unittest.TestCase):
 
     def test_create_existing_cast(self):
         '''Check if casts are created uniquely as expected'''
-        response = self.client().post('/casts', json=self.second_cast)
+        response = self.client().post(
+            '/casts',
+             json=self.second_cast,
+            headers = {'Authorization': 'Bearer {}'.format(self.executive_producer)}
+             )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 400)
@@ -414,7 +506,10 @@ class CastingTestCase(unittest.TestCase):
 
     def test_list_casts(self):
         '''Check to see if all casts are listed as expected'''
-        response = self.client().get('/casts')
+        response = self.client().get(
+            '/casts',
+            headers = {'Authorization': 'Bearer {}'.format(self.casting_assistant)}
+            )
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
