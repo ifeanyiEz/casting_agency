@@ -15,7 +15,6 @@ def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
-  migrate.init_app(app, db)
   CORS(app)
 
 
