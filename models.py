@@ -5,15 +5,9 @@ from sqlalchemy import Column, String, Integer, create_engine, delete
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from datetime import datetime
-from flask_migrate import Migrate
 from settings import *
 import json
 
-
-
-#=============================REFERENCES=============================#
-
-#https://pynative.com/make-python-class-json-serializable/
 
 # database_path = os.environ['DATABASE_URL']
 # if database_path.startswith("postgres://"):
@@ -23,7 +17,6 @@ database_name = DB_NAME
 database_path = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, 'localhost:5432', database_name)
 
 db = SQLAlchemy()
-migrate = Migrate()
 
 '''
 setup_db(app)
