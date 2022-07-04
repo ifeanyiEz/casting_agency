@@ -1,6 +1,9 @@
 # Casting Agency API
 This is the final project for the Full Stack Web Developer Nanodegree Program by Udacity.
 
+## Heroku Address
+The project is hosted at https://ezu-casting-agency.herokuapp.com
+
 ## Casting Agency Specifications
 The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. The developer plays the role of an Executive Producer within the company and is therefore tasked with creating a system to simplify and streamline the agency's operational processes.
 
@@ -41,16 +44,46 @@ export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run --reload
 ```
-#### Test_App Local Run 
+## Actors and Movies Formats
+Actors and Movies are presented in the detailed or short formats, depending on the endpoint and the need for information.
+#### Detailed Actor Format
+The actor_detail() output format looks like this:
 ```
-dropdb casting_test && createdb casting_test
-psql casting_test < casting_test.psql
-python3 test_app.py
+{
+    "id": 20,
+    "name": "Amarachi Ezgels"
+    "age": 37,
+    "gender": "Female"
+}
 ```
-#### Endpoints:
-
-##### GET '/api/v1.0/actors'
-
+#### Short Actor Format
+The actor_short() output format looks like this:
+```
+{
+    "actor": "Name: Amarachi Ezgels, Age: 37, Gender: Female"
+}
+```
+#### Detailed Movie Format
+The movie_detail() output format looks like this:
+```
+{
+    "id": 24,
+    "title": "This Movie Title",
+    "release_date": "2023-07-22 00:00:00"
+}
+```
+#### Short Movie Format
+The movie_short() output format looks like this:
+```
+{
+    "movie": "Title: This Movie Title, Release Date: 2023-07-22 00:00:00"
+}
+```
+## Endpoints:
+The following are the application endpoints and the expected return outputs
+#### GET '/api/v1.0/actors'
+This endpoints returns a jsonified list of all the actors in the database, presented in pages of 5 actors per page. Actors' details are shown as dictionaries in the actor_long() format.
+It also includes the total number of actors in the database, as shown in the sample:
 ```
 {
     "actors": [
@@ -77,10 +110,8 @@ python3 test_app.py
     "success": true
 }
 ```
-
-
-##### GET '/api/v1.0/actors/${id}'
-
+#### GET '/api/v1.0/actors/${id}'
+This end point returns a jsonified output for a specific actor in the database. The output presents the actor's details in a dict and includes all the movies featuring the requested actor in an array, in which each movie is presented in the movie_short() format.
 ```
 {
     "actor": {
@@ -103,9 +134,8 @@ python3 test_app.py
     "success": true
 }
 ```
-
 ##### POST '/api/v1.0/actors'
-
+This endpoint creates and sends the data of a new actor into the DB and, for a successful addition, it returns a jsonified output showing the details of the actor. Actors are uniquely created by name.
 ```
 {
     "new actor": {
@@ -117,7 +147,6 @@ python3 test_app.py
     "success": true
 }
 ```
-
 ##### PATCH '/api/v1.0/actors/${id}'
 
 ```
@@ -278,4 +307,10 @@ python3 test_app.py
     },
     "success": true
 }
+```
+#### Test_App Local Run 
+```
+dropdb casting_test && createdb casting_test
+psql casting_test < casting_test.psql
+python3 test_app.py
 ```
