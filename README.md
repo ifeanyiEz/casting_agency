@@ -81,8 +81,9 @@ The movie_short() output format looks like this:
 ```
 ## Endpoints:
 The following are the application endpoints and the expected return outputs
+### Actors
 #### GET '/api/v1.0/actors'
-This endpoints returns a jsonified list of all the actors in the database, presented in pages of 5 actors per page. Actors' details are shown as dictionaries in the actor_long() format.
+This endpoints returns a jsonified list of all the actors in the database, presented in pages of 5 actors per page. Actors' details are shown as dictionaries in the actor_detail() format.
 It also includes the total number of actors in the database, as shown in the sample:
 ```
 {
@@ -134,7 +135,7 @@ This end point returns a jsonified output for a specific actor in the database. 
     "success": true
 }
 ```
-##### POST '/api/v1.0/actors'
+#### POST '/api/v1.0/actors'
 This endpoint creates and sends the data of a new actor into the DB and, for a successful addition, it returns a jsonified output showing the details of the actor. Actors are uniquely created by name.
 ```
 {
@@ -147,8 +148,8 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-##### PATCH '/api/v1.0/actors/${id}'
-
+#### PATCH '/api/v1.0/actors/${id}'
+This endpoint modifies the details of a specific existing actor and, for a successful patch, returns the details of the modified actor in the actor_detail() format.
 ```
 {
     "modified actor": {
@@ -160,19 +161,18 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-
-##### DELETE '/api/v1.0/actors/${id}'
-
+#### DELETE '/api/v1.0/actors/${id}'
+This endpoint removes the record of a specific existing actor from the database. If the deletion is successful, it returns the ID of the deleted actor.
 ```
 {
     "deleted actor": "Actor with id: 12",
     "success": true
 }
 ```
-
-
-##### GET '/api/v1.0/movies'
-
+### Movies
+#### GET '/api/v1.0/movies'
+This endpoints returns a jsonified list of all the movies in the database, presented in pages of 5 movies per page. Movies' details are shown as dictionaries in the movie_detail() format.
+It also includes the total number of movies in the database, as shown in the sample:
 ```
 {
     "movies": [
@@ -196,9 +196,8 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-
-##### GET '/api/v1.0/movies/${id}'
-
+#### GET '/api/v1.0/movies/${id}'
+This end point returns a jsonified output for a specific movie in the database. The output presents the movie's details in a dict and includes all the actors featured the requested movie in an array, in which each actor is presented in the actor_short() format.
 ```
 {
     "movie": {
@@ -223,9 +222,8 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-
-##### POST '/api/v1.0/movies'
-
+#### POST '/api/v1.0/movies'
+This endpoint creates and sends the data of a new movie into the DB and, for a successful addition, it returns a jsonified output showing the details of the movie. Movies are uniquely created by name.
 ```
 {
     "new movie": {
@@ -236,9 +234,8 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-
-##### PATCH '/api/v1.0/movies/${id}'
-
+#### PATCH '/api/v1.0/movies/${id}'
+This endpoint modifies the details of a specific existing movie and, for a successful patch, returns the details of the modified movie in the movie_detail() format.
 ```
 {
     "modified movie": {
@@ -249,17 +246,16 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-##### DELETE '/api/v1.0/movies/${id}'
-
+#### DELETE '/api/v1.0/movies/${id}'
+This endpoint removes the record of a specific existing movie from the database. If the deletion is successful, it returns the ID of the deleted movie.
 ```
 {
     "deleted movie": "Movie with id: 9",
     "success": true
 }
 ```
-
-
-##### GET '/api/v1.0/casts'
+### Casts
+#### GET '/api/v1.0/casts'
 
 ```
 {
@@ -296,7 +292,7 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-##### POST '/api/v1.0/casts'
+#### POST '/api/v1.0/casts'
 
 ```
 {
@@ -308,7 +304,8 @@ This endpoint creates and sends the data of a new actor into the DB and, for a s
     "success": true
 }
 ```
-#### Test_App Local Run 
+## Test_App Local Run 
+In order to run the unit tests, the following instructions are run in the terminal. These will reset the databse and ensure that it is empty, then populate it with data from the back-up copy of the casting_test db, and then run the test_app.py file: 
 ```
 dropdb casting_test && createdb casting_test
 psql casting_test < casting_test.psql
