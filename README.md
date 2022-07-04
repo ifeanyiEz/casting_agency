@@ -10,6 +10,19 @@ The Casting Agency models a company that is responsible for creating movies and 
 ## Motivation for the Project
 This capstone project is designed to provide an opportunity for students, who have successfully gone through the program, to use all of the concepts and skills taught in the courses to build an API from start to finish and host it.
 
+## Database Classes
+The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
+
+## User Roles
+There are three (3) user roles for this project:
+
+#### Casting Assistant
+Offers general help with finding actors to star in a movie. This role can view actors, movies and casts.
+#### Casting Director
+Casting directors find the stars who bring the characters in a movie to life. This role has all the permissions of the casting assistant, plus the permission to create, modifiy and delete actors, as well as modify movies. 
+#### Executive Producer
+Executive producers finance the movies, participate in the creative effort, or work on set. Their responsibilities vary from funding or attracting investors into the movie project to legal, scripting, marketing, advisory and supervising capacities. This role has all the permissions of a casting director plus the permission to create movie casts, as well as to create and delete movies.
+
 ## Running the Project Locally
 In order to successfully run the project on your local server, you'd need to pay attention to the following:
 
@@ -256,7 +269,7 @@ This endpoint removes the record of a specific existing movie from the database.
 ```
 ### Casts
 #### GET '/api/v1.0/casts'
-
+This endpoints returns a jsonified list of all movie casts in the database, presented in pages of 5 movie casts per page. Cast details are shown as dictionaries. It also includes the total number of casts in the database, as shown in the sample:
 ```
 {
     "cast_details": [
@@ -293,7 +306,7 @@ This endpoint removes the record of a specific existing movie from the database.
 }
 ```
 #### POST '/api/v1.0/casts'
-
+This endpoint creates and sends the data of a new movie casts into the DB and, for a successful addition, it returns a jsonified output showing the details of the new movie cast.
 ```
 {
     "new movie cast": {
