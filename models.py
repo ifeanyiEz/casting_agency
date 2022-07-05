@@ -11,7 +11,7 @@ import json
 
 #database_path = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, 'localhost:5432', DB_NAME)
 
-database_path = DB_URL
+database_path = "postgres://haeelpvjbrazts:e1971585cee1997e147ad74c98223120b2c731ca3c15dde48117a2310b1a4f93@ec2-52-71-23-11.compute-1.amazonaws.com:5432/dbds3qmg7dh8h1"
 if database_path.startswith("postgres://"):
   database_path = database_path.replace("postgres://", "postgresql://", 1)
 
