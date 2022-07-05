@@ -24,7 +24,7 @@ def create_app(test_config=None):
   Uncomment the line below to initialize the database with with data from models.py. 
   Do this once on first run.
   '''
-  #drop_and_create_all()
+  drop_and_create_all()
 
 
   #========================DEFINE ENDPOINTS==========================#
