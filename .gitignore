@@ -1,6 +1,5 @@
 capstone/
 .env
-settings.py
 __pycache__/
 
 # OS generated files #
