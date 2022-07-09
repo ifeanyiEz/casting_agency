@@ -378,7 +378,8 @@ This documentation assumes that the user already:
 * Is able to login to heroku from the command line
 ### Login to Heroku
 Use the heroku login command to login to heroku via the command line:
-```heroku login -i
+```
+heroku login -i
 ```
 ### Procfile and runtime.txt files
 Before pushing the project to heroku, ensure that a runtime.txt file and a Procfile are present in the project's root directory.
