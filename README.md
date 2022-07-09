@@ -439,6 +439,6 @@ To confirm that the push was successful navigate to the 'More' button on your ap
 ```
 export FLASK_APP=app.py
 export FLASK_ENV=development
-python3 app.py
+flask run
 ```
 If the app starts at http://127.0.0.1:5000 without errors, then your build was successful and you can click on 'Open app' from your dashboard to open the app in the designated url.
