@@ -393,13 +393,13 @@ THis file simply states the exact python version used for the project. In this c
 ```
 python-3.9.7
 ```
-### Create the project in heroku cloud
+### Create the project in Heroku cloud
 Next, while still logged in to heroku, create an app in heroku cloud. Ensure that your app has a unique name. In this case ezu-casting-agency.
 ```
 heroku create ezu-casting-agency --buildpack heroku/python
 ```
 ### Git repository on Heroku
-Ensure that a Git remote repository was created on Heroku byt the "heroku create" command.
+Ensure that a Git remote repository was created on Heroku by the "heroku create" command.
 ```
 git remote -v
 ```
