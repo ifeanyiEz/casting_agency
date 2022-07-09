@@ -41,9 +41,32 @@ Casting directors find the stars who bring the characters in a movie to life. Th
 Executive producers finance the movies, participate in the creative effort, or work on set. Their responsibilities vary from funding or attracting investors into the movie project to legal, scripting, marketing, advisory and supervising capacities. This role has all the permissions of a casting director plus the permission to create movie casts, as well as to create and delete movies.
 
 ## Auth0 Setup
-For purposes of identity and access management, auth0 was used in this project. Role based access control was used to restrict access and permissions based on the roles defined above.
+For purposes of identity and access management, auth0 was used in this project. 
+### Auth0 Configuration Parameters
+The configuration parameters are listed in the setup.sh file.
+### Setting Up Auth0
+The following is a step by step guide to setting up auth0
+#### Auth0 Account and Tenant Domain
+Go to the auth0 website and signup for a new account. THis project is built on the free auth0 account plan.
+```
+https://auth0.com/
+```
+Setup a tenant domain with a unique name, and fill-in a brief profile form
+#### Create the Application
+* On the landing page, click the 'Create application' button to create a new application. 
+* From within the 'Create Application' dialog box, type-in the application name. This is a compulsory field. In this case 'CastingAgency'.
+* From the 'application type' options, choose 'Regular Web Application'.
+* Click the 'create' button at the bottom right hand
+#### Configure the Application
+Within the CastingAgency application page, click on the 'settings' button and fill-in the form using information from the setup.sh file as well as the following:
+* Allowed Logout URLs: http://localhost:8100, http://localhost:5000
+* Allowed Web Origins: http://localhost:8100, http://localhost:5000
+* Allowed Origins (CORS): http://localhost:8100, http://localhost:5000
+Save the form by clicking on the 'Save' button at the bottom of the form.
+#### Create and Configure the API
+From the left-hand menu click on 'Applications' >> 'APIs'
 ### Auth0 Permissions
-Based on the above roles, the following permissions were created and assigned.
+Role based access control was used to restrict access and permissions based on the roles defined above. Based on the above roles, the following permissions were created and assigned.
 #### Casting Assistant Permissions
 ```
 get:actors
@@ -73,8 +96,6 @@ delete:movies
 get:movie_casts
 post:movie_casts
 ```
-### Auth0 Configuration Parameters
-The configuration parameters are listed in the setup.sh file.
 ## Database Classes
 The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
 ## Actors and Movies Formats
