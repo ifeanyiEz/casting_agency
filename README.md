@@ -33,13 +33,24 @@ There are three (3) user roles for this project:
 
 #### Casting Assistant
 Offers general help with finding actors to star in a movie. This role can view actors, movies and casts.
+
+#### Casting Director
+Casting directors find the stars who bring the characters in a movie to life. This role has all the permissions of the casting assistant, plus the permission to create, modifiy and delete actors, as well as modify movies. 
+
+#### Executive Producer
+Executive producers finance the movies, participate in the creative effort, or work on set. Their responsibilities vary from funding or attracting investors into the movie project to legal, scripting, marketing, advisory and supervising capacities. This role has all the permissions of a casting director plus the permission to create movie casts, as well as to create and delete movies.
+
+## Auth0 Setup
+For purposes of identity and access management, auth0 was used in this project. Role based access control was used to restrict access and permissions based on the roles defined above.
+### Auth0 Permissions
+Based on the above roles, the following permissions were created and assigned.
+#### Casting Assistant Permissions
 ```
 get:actors
 get:movies
 get:movie_casts
 ```
-#### Casting Director
-Casting directors find the stars who bring the characters in a movie to life. This role has all the permissions of the casting assistant, plus the permission to create, modifiy and delete actors, as well as modify movies. 
+#### Casting Director Permissions
 ```
 get:actors
 post:actors
@@ -49,8 +60,7 @@ get:movies
 patch:movies
 get:movie_casts
 ```
-#### Executive Producer
-Executive producers finance the movies, participate in the creative effort, or work on set. Their responsibilities vary from funding or attracting investors into the movie project to legal, scripting, marketing, advisory and supervising capacities. This role has all the permissions of a casting director plus the permission to create movie casts, as well as to create and delete movies.
+#### Executive Producer Permissions
 ```
 get:actors
 post:actors
@@ -63,6 +73,8 @@ delete:movies
 get:movie_casts
 post:movie_casts
 ```
+### Auth0 Configuration Parameters
+The configuration parameters are listed in the setup.sh file.
 ## Database Classes
 The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
 ## Actors and Movies Formats
@@ -389,7 +401,7 @@ The procfile contains instructions to run the application using the production-r
 web: gunicorn app:app
 ```
 #### Runtime.txt
-THis file simply states the exact python version used for the project. In this case:
+This file simply states the exact python version used for the project. In this case:
 ```
 python-3.9.7
 ```
