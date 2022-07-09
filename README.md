@@ -28,9 +28,6 @@ The project is structured as follows:
 ├── setup.sh
 └── test_app.py
 ```
-## Database Classes
-The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
-
 ## User Roles
 There are three (3) user roles for this project:
 
@@ -66,40 +63,8 @@ delete:movies
 get:movie_casts
 post:movie_casts
 ```
-## Running the Project Locally
-In order to successfully run the project on your local server, you'd need to pay attention to the following:
-
-#### Install Python3.9
-This project was created using python3.9. In order to install the latest version of python, follow the instructions at https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python
-#### Create a Virtual Environment
-For best results and performance, it is strongly recommended all python projects should be run in virtual environments. This allows you to stay organized and isolate each project with it's uniques set of dependencies.
-
-To create your uniquely named virtual environment run
-```
-python3 -m venv <env_name>
-```
-To activate the environment so as to begin working from within the environment, run
-```
-source <env_name>/bin/activate
-```
-#### Install Dependencies
-To install dependencies run
-```
-pip install -r requirements.txt
-```
-#### Setup The Database
-With Postgres running, create the database using the following command: 
-```
-createdb casting_agency
-```
-#### Initialize the Database
-In the app.py file uncomment the line that contains the function drop_and_create_all() on first run only. This will initialize the database. Comment this line out after the first run.
-#### App Local Run
-```
-export FLASK_APP=app.py
-export FLASK_ENV=development
-flask run --reload
-```
+## Database Classes
+The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
 ## Actors and Movies Formats
 Actors and Movies are presented in the detailed or short formats, depending on the endpoint and the need for information.
 #### Detailed Actor Format
@@ -134,6 +99,40 @@ The movie_short() output format looks like this:
 {
     "movie": "Title: This Movie Title, Release Date: 2023-07-22 00:00:00"
 }
+```
+## Running the Project Locally
+In order to successfully run the project on your local server, you'd need to pay attention to the following:
+
+#### Install Python3.9
+This project was created using python3.9. In order to install the latest version of python, follow the instructions at https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python
+#### Create a Virtual Environment
+For best results and performance, it is strongly recommended all python projects should be run in virtual environments. This allows you to stay organized and isolate each project with it's uniques set of dependencies.
+
+To create your uniquely named virtual environment run
+```
+python3 -m venv <env_name>
+```
+To activate the environment so as to begin working from within the environment, run
+```
+source <env_name>/bin/activate
+```
+#### Install Dependencies
+To install dependencies run
+```
+pip install -r requirements.txt
+```
+#### Setup The Database
+With Postgres running, create the database using the following command: 
+```
+createdb casting_agency
+```
+#### Initialize the Database
+In the app.py file uncomment the line that contains the function drop_and_create_all() on first run only. This will initialize the database. Comment this line out after the first run.
+#### App Local Run
+```
+export FLASK_APP=app.py
+export FLASK_ENV=development
+flask run --reload
 ```
 ## API Endpoints Behaviour:
 The following are the application endpoints and the expected return outputs
