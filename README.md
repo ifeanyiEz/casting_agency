@@ -474,3 +474,11 @@ export FLASK_ENV=development
 flask run
 ```
 If the app starts at http://127.0.0.1:5000 without errors, then your build was successful and you can click on 'Open app' from your dashboard to open the app in the designated url.
+
+## References
+https://github.com/leonchan93/Udacity/tree/master/projects/capstone/starter
+https://exerror.com/flask-compat-import-texttype-modulenotfounderror-no-module-named-flask-compat/
+https://stackoverflow.com/questions/67728474/modulenotfounderror-no-module-named-flask-compat
+https://sodocumentation.net/heroku/topic/8321/heroku-error-codes
+https://stackoverflow.com/questions/33265812/best-http-authorization-header-type-for-jwt
+https://github.com/Aishwarya1403/The-Book-Store-5
