@@ -9,7 +9,25 @@ The Casting Agency models a company that is responsible for creating movies and 
 
 ## Motivation for the Project
 This capstone project is designed to provide an opportunity for students, who have successfully gone through the program, to use all of the concepts and skills taught in the courses to build an API from start to finish and host it.
-
+## Project file structure
+The project is structured as follows:
+```
+├── capstone/
+├── .env
+├── .gitignore
+├── app.py
+├── auth.py
+├── casting_test.psql
+├── Manage,py
+├── models.py
+├── Procfile
+├── README.md
+├── requirements.txt
+├── runtime.txt
+└── settings.py
+├── setup.sh
+└── test_app.py
+```
 ## Database Classes
 The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
 
@@ -18,11 +36,36 @@ There are three (3) user roles for this project:
 
 #### Casting Assistant
 Offers general help with finding actors to star in a movie. This role can view actors, movies and casts.
+```
+get:actors
+get:movies
+get:movie_casts
+```
 #### Casting Director
 Casting directors find the stars who bring the characters in a movie to life. This role has all the permissions of the casting assistant, plus the permission to create, modifiy and delete actors, as well as modify movies. 
+```
+get:actors
+post:actors
+patch:actors
+delete:actors
+get:movies
+patch:movies
+get:movie_casts
+```
 #### Executive Producer
 Executive producers finance the movies, participate in the creative effort, or work on set. Their responsibilities vary from funding or attracting investors into the movie project to legal, scripting, marketing, advisory and supervising capacities. This role has all the permissions of a casting director plus the permission to create movie casts, as well as to create and delete movies.
-
+```
+get:actors
+post:actors
+patch:actors
+delete:actors
+get:movies
+patch:movies
+post:movies
+delete:movies
+get:movie_casts
+post:movie_casts
+```
 ## Running the Project Locally
 In order to successfully run the project on your local server, you'd need to pay attention to the following:
 
@@ -50,7 +93,7 @@ With Postgres running, create the database using the following command:
 createdb casting_agency
 ```
 #### Initialize the Database
-In the app.py file uncomment the line that contains the function drop_and_create_all()on first run only. This will initialize the database.
+In the app.py file uncomment the line that contains the function drop_and_create_all() on first run only. This will initialize the database. Comment this line out after the first run.
 #### App Local Run
 ```
 export FLASK_APP=app.py
@@ -92,7 +135,7 @@ The movie_short() output format looks like this:
     "movie": "Title: This Movie Title, Release Date: 2023-07-22 00:00:00"
 }
 ```
-## Endpoints:
+## API Endpoints Behaviour:
 The following are the application endpoints and the expected return outputs
 ### Actors
 #### GET '/api/v1.0/actors'
@@ -324,3 +367,66 @@ dropdb casting_test && createdb casting_test
 psql casting_test < casting_test.psql
 python3 test_app.py
 ```
+## Pushing to GitHub Repository
+If everything runs smoothly and all endpoints return the required outputs, the user can then push to the github repository
+```
+git push -u origin master
+```
+## Pushing to Heroku
+This documentation assumes that the user already:
+* Has a heroku account. The free account option would suffice for this project
+* Has downloaded and installed the heroku command line interface locally, and
+* Is able to login to heroku from the command line
+### Login to Heroku
+Use the heroku login command to login to heroku via the command line:
+```heroku login -i
+```
+### Procfile and runtime.txt files
+Before pushing the project to heroku, ensure that a runtime.txt file and a Procfile are present in the project's root directory.
+#### Procfile
+The procfile contains instructions to run the application using the production-ready WSGI server gunicorn, as follows:
+```
+web: gunicorn app:app
+```
+#### Runtime.txt
+THis file simply states the exact python version used for the project. In this case:
+```
+python-3.9.7
+```
+### Create the project in heroku cloud
+Next, while still logged in to heroku, create an app in heroku cloud. Ensure that your app has a unique name. In this case ezu-casting-agency.
+```
+heroku create ezu-casting-agency --buildpack heroku/python
+```
+### Git repository on Heroku
+Ensure that a Git remote repository was created on Heroku byt the "heroku create" command.
+```
+git remote -v
+```
+### Create a postgreSQL addon for the database
+Heroku has an addon for apps for a postgresql database instance. Run the following line of code in order to create the database and connect it to the application:
+```
+heroku addons:create heroku-postgresql:hobby-dev --app ezu-casting-agency
+```
+### Configure the application
+In order to set up the environment variables in the Heroku cloud, specific to the application, run the following command to fix the DATABASE_URL configuration variable:
+```
+heroku config --app ezu-casting-agency
+```
+### Update .env, models.py and setup.sh files
+Copy the resulting DATABASE_URL from the above step and set it as a string literal to the DATABASE_URL variable in the .env adn setup.sh files in the project root. Ensure that the databse path in models.py points to the DATABASE_URL variable.
+Remember to set the EXCITED variable to 'true' from the heroku dashboard.
+
+### Push to Heroku
+Fianlly, commit the changes made to the above files, and then push the project to Heroku.
+```
+git push heroku master
+```
+## Confirm a successful build
+To confirm that the push was successful navigate to the 'More' button on your application page. Select the 'Run Console' button. Then type 'bash'. After it loads up, run the following commands:
+```
+export FLASK_APP=app.py
+export FLASK_ENV=development
+python3 app.py
+```
+If the app starts at http://127.0.0.1:5000 without errors, then your build was successful and you can click on 'Open app' from your dashboard to open the app in the designated url.
