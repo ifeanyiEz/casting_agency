@@ -1,12 +1,9 @@
 # Casting Agency API
 This is the final project for the Full Stack Web Developer Nanodegree Program by Udacity.
-
 ## Heroku Address
 The project is hosted at https://ezu-casting-agency.herokuapp.com
-
 ## Casting Agency Specifications
 The Casting Agency models a company that is responsible for creating movies and managing and assigning actors to those movies. The developer plays the role of an Executive Producer within the company and is therefore tasked with creating a system to simplify and streamline the agency's operational processes.
-
 ## Motivation for the Project
 This capstone project is designed to provide an opportunity for students, who have successfully gone through the program, to use all of the concepts and skills taught in the courses to build an API from start to finish and host it.
 ## Project file structure
@@ -30,16 +27,12 @@ The project is structured as follows:
 ```
 ## User Roles
 There are three (3) user roles for this project:
-
 #### Casting Assistant
 Offers general help with finding actors to star in a movie. This role can view actors, movies and casts.
-
 #### Casting Director
 Casting directors find the stars who bring the characters in a movie to life. This role has all the permissions of the casting assistant, plus the permission to create, modifiy and delete actors, as well as modify movies. 
-
 #### Executive Producer
 Executive producers finance the movies, participate in the creative effort, or work on set. Their responsibilities vary from funding or attracting investors into the movie project to legal, scripting, marketing, advisory and supervising capacities. This role has all the permissions of a casting director plus the permission to create movie casts, as well as to create and delete movies.
-
 ## Auth0 Setup
 For purposes of identity and access management, auth0 was used in this project. 
 ### Auth0 Configuration Parameters
@@ -63,8 +56,20 @@ Within the CastingAgency application page, click on the 'settings' button and fi
 * Allowed Web Origins: http://localhost:8100, http://localhost:5000
 * Allowed Origins (CORS): http://localhost:8100, http://localhost:5000
 Save the form by clicking on the 'Save' button at the bottom of the form.
-#### Create and Configure the API
-From the left-hand menu click on 'Applications' >> 'APIs'
+#### Create the API
+* From the left-hand menu click on 'Applications' >> 'APIs'. 
+* Within the APIs page, on the right click the 'Create API' button. 
+* In the dialog box that opens up, enter an api name. In this case "CastingAgency". This is also a compulsory field.
+* Enter a url for the api identifier. This can be found in the setup.sh file.
+* Click the 'create' button at the bottom right hand
+#### Configure the API
+Once created, the API page will open. Click on the settings button to configure the API. Set the following:
+* Token Expiration For Browser Flows (Seconds): 86400
+* Enable RBAC: On
+* Add Permissions in the Access Token: On
+* Allow Skipping User Consent: On
+* Click on 'Permissions' and create the permissions as described below.
+Save the form by clicking on the 'Save' button at the bottom of the form.
 ### Auth0 Permissions
 Role based access control was used to restrict access and permissions based on the roles defined above. Based on the above roles, the following permissions were created and assigned.
 #### Casting Assistant Permissions
@@ -96,6 +101,12 @@ delete:movies
 get:movie_casts
 post:movie_casts
 ```
+### Users
+Three users are needed for this project, where each takes up one of the roles described above. 
+* From the left hand menu click on 'User Management' >> 'Users'. 
+* Use the 'Create User' button on the right to create three users.
+* Once created, assign each user a role and the accompanying permissions.
+
 ## Database Classes
 The database comprises the Actor and Movie classes which inherit from db.Model, as well as a Movie_Cast table (db.Table) wchich is the association between actors and movies.
 ## Actors and Movies Formats
